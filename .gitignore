@@ -154,3 +154,5 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+HelloJCE/App_Data/aspnet-HelloJCE-20140315044932.mdf
+HelloJCE/App_Data/aspnet-HelloJCE-20140315044932_log.ldf
