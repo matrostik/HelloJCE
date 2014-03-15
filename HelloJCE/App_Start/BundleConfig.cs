@@ -24,7 +24,7 @@ namespace HelloJCE
                       "~/Scripts/respond.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
+                      "~/Content/slate.css",
                       "~/Content/site.css"));
         }
     }
