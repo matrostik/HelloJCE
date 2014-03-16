@@ -50,7 +50,6 @@ namespace HelloJCE.Controllers
         {
             if (ModelState.IsValid)
             {
-                movie.Image = HttpUtility.UrlDecode(movie.Image);
                 db.Movies.Add(movie);
                 db.SaveChanges();
                 return RedirectToAction("Index");
