@@ -8,7 +8,7 @@
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create",null, new { @class = "label label-warning" })
 </p>
 <table class="table">
     <tr>
@@ -48,9 +48,9 @@
             @Html.DisplayFor(modelItem => item.Price)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
+            @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "label label-success" }) |
+            @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "label label-warning" }) |
+            @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "label label-danger" })
         </td>
     </tr>
 }
