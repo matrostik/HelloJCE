@@ -1,8 +1,104 @@
-﻿
-@{
-    ViewBag.Title = "Movie List";
+﻿@{
+    ViewBag.Title = "Testing";
 }
+<h2>My tests</h2>
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2 class="panel-title">DatePicker</h2>
+            </div>
+            <div class="panel-body">
+                <p >
+                    bootstrap-datepicker sandbox
+                    <div id="sandbox-container"><input type="text" class="form-control"></div>
+                </p>
+                <p><a class="btn btn-default" href="http://eternicode.github.io/bootstrap-datepicker/">Learn more &raquo;</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2 class="panel-title">test2</h2>
+            </div>
+            <div class="panel-body">
+                <p>
+                    
+                   
+                </p>
+                <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2 class="panel-title">test3</h2>
+            </div>
+            <div class="panel-body">
+                <p>
 
-<h2>My Movie List</h2>
 
-<p>Hello from our View Template!</p>
+                </p>
+                <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2 class="panel-title">test4</h2>
+            </div>
+            <div class="panel-body">
+                <p>
+
+
+                </p>
+                <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+            </div>
+        </div>
+    </div><div class="col-md-4">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h2 class="panel-title">test5</h2>
+        </div>
+        <div class="panel-body">
+            <p>
+
+
+            </p>
+            <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+        </div>
+    </div>
+</div><div class="col-md-4">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h2 class="panel-title">test6</h2>
+        </div>
+        <div class="panel-body">
+            <p>
+
+
+            </p>
+            <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+        </div>
+    </div>
+</div>
+    </div>
+
+
+    @Styles.Render("~/Content/date")
+    @section Scripts {
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/date")
+        <script type="text/javascript">
+            $('#sandbox-container input').datepicker({
+                format: "dd/mm/yyyy",
+                autoclose: true,
+                todayHighlight: true
+            });
+        </script>
+    }

@@ -23,8 +23,13 @@ namespace HelloJCE
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/date").Include(
+                       "~/Scripts/bootstrap-datepicker.js"));
+            bundles.Add(new StyleBundle("~/Content/date").Include(
+                     "~/Content/bootstrap-datepicker.css"));
+
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/slate.css",
+                      "~/Content/cyborg.css",
                       "~/Content/site.css"));
         }
     }
