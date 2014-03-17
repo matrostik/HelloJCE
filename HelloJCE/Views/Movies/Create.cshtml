@@ -20,21 +20,21 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Title, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Title)
+                @Html.TextBoxFor(model => model.Title, new { @class = "form-control", @id = "inputDefault" })
                 @Html.ValidationMessageFor(model => model.Title)
             </div>
         </div>
         <div class="form-group">
             @Html.LabelFor(model => model.Image, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Image)
+                @Html.TextBoxFor(model => model.Image, new { @class = "form-control", @id = "inputDefault" })
                 @Html.ValidationMessageFor(model => model.Image)
             </div>
         </div>
         <div class="form-group">
             @Html.LabelFor(model => model.ReleaseDate, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.ReleaseDate)
+                @Html.TextBoxFor(model => model.ReleaseDate, new { @class = "form-control", @id = "inputDefault" })
                 @Html.ValidationMessageFor(model => model.ReleaseDate)
             </div>
         </div>
@@ -42,7 +42,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Genre, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Genre)
+                @Html.TextBoxFor(model => model.Genre, new { @class = "form-control", @id = "inputDefault" })
                 @Html.ValidationMessageFor(model => model.Genre)
             </div>
         </div>
@@ -50,7 +50,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Price, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Price)
+                @Html.TextBoxFor(model => model.Price, new { @class = "form-control", @id = "inputDefault" })
                 @Html.ValidationMessageFor(model => model.Price)
             </div>
         </div>
@@ -64,7 +64,7 @@
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to List", "Index", null, new { @class = "label label-primary" })
 </div>
 
 @section Scripts {
