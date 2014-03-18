@@ -8,7 +8,7 @@ using System.Web.UI;
 
 namespace HelloJCE.Helpers
 {
-    public class ImageHelper
+    public static class ImageHelper
     {
         public static string Image(this HtmlHelper helper, string url)
         {

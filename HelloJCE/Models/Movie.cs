@@ -10,7 +10,7 @@ namespace HelloJCE.Models
         public string Title { get; set; }
         public string Image { get; set; }
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd MMMM yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd MMMM yyyy}",HtmlEncode=true, ApplyFormatInEditMode = true)]
         public DateTime ReleaseDate { get; set; }
         public string Genre { get; set; }
         public decimal Price { get; set; }
