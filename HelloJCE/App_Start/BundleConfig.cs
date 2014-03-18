@@ -31,6 +31,12 @@ namespace HelloJCE
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/cyborg.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/rate").Include(
+                      "~/Scripts/jquery.rating.js",
+                      "~/Scripts/jquery.rating.pack.js"));
+            bundles.Add(new StyleBundle("~/Content/rate").Include(
+                     "~/Content/jquery.rating.css"));
         }
     }
 }

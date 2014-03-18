@@ -14,6 +14,9 @@ namespace HelloJCE.Models
         public DateTime ReleaseDate { get; set; }
         public string Genre { get; set; }
         public decimal Price { get; set; }
+        //fields for rating
+        public int Rating { get; set; }
+        public int TotalRaters { get; set; }
     }
     public class MovieDBContext : DbContext
     {

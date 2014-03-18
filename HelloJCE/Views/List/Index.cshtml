@@ -1,4 +1,5 @@
-﻿@{
+﻿@model HelloJCE.Models.ItemRating
+@{
     ViewBag.Title = "Testing";
 }
 <h2>My tests</h2>
@@ -20,14 +21,14 @@
     <div class="col-md-4">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h2 class="panel-title">test2</h2>
+                <h2 class="panel-title">jQuery Star Rating</h2>
             </div>
             <div class="panel-body">
                 <p>
-                    
-                   
+                    FyneWorks jQuery Star Rating Plugin
+                    @Html.Partial("_RatingPartial")
                 </p>
-                <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+                <p><a class="btn btn-default" href="http://www.fyneworks.com/jquery/star-rating/">Learn more &raquo;</a></p>
             </div>
         </div>
     </div>
