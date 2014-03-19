@@ -7,7 +7,7 @@
 
 <h2>Index</h2>
 <p>
-    @Html.ActionLink("Create New", "Create",null, new { @class = "label label-warning" })
+    @Html.ActionLink("Create New", "Create", null, new { @class = "label label-warning" })
 </p>
 <table class="table">
     <tr>
@@ -29,29 +29,78 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Title)
-        </td>
-        <td>
-            <img src="@(item.Image)" height="55"/>
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ReleaseDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Genre)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Price)
-        </td>
-        <td>
-            @Html.ActionLink("Details", "Details", new { id = item.ID }, new { @class = "label label-success" }) |
-            @Html.ActionLink("Edit", "Edit", new { id = item.ID }, new { @class = "label label-warning" }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.ID }, new { @class = "label label-danger" })
-        </td>
-    </tr>
-}
-
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+                <p> @Html.Partial("_MovieRatingPartial", item)</p>
+            </td>
+            <td>
+                <img src="@(item.Image)" height="55" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReleaseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Genre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id = item.Id }, new { @class = "label label-success" }) |
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "label label-warning" }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id }, new { @class = "label label-danger" })
+            </td>
+        </tr>
+    }
 </table>
+
+@Styles.Render("~/Content/rate2")
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/rate2")
+
+    <script type="text/javascript">
+        // ratting system: https://github.com/irfan/jquery-star-rating
+        $('.ratting-item').rating(function (vote, event) {
+            var anchor = $(event.currentTarget),
+                pid = anchor.closest(".ratting-item").data("pid"),
+                url = '@Url.Action("RateItem", "Movies")';
+
+            // show message while doing the database round trip
+            $('.ratting-item[data-pid=' + pid + ']')
+                .next()
+                .text("Placing your vote...");
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                data: { rate: vote, id: pid },
+                success: function (data) {
+
+                    if (data.success) {
+                        // all went well, here you can say Thank you
+                        $('.ratting-item[data-pid=' + data.pid + ']')
+                            .next()
+                            .text("Voted! (product id: " + data.pid + ")");
+                    }
+                    else {
+                        // There must be an Exception error, let's show it
+                        $('.ratting-item[data-pid=' + data.pid + ']')
+                            .next()
+                            .text("Something went wrong...");
+                    }
+                },
+                error: function (err) {
+                    // the call thrown an error
+                    $('.result').text(err);
+                },
+                complete: function () {
+                    //$(".loading").hide();
+                }
+            });
+        });
+    </script>
+}

@@ -166,6 +166,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ImageHelper.cs" />
+    <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ItemRating.cs" />
@@ -244,6 +245,7 @@
     <Content Include="Views\Movies\Index.cshtml" />
     <Content Include="Views\Shared\_RatingPartial.cshtml" />
     <Content Include="Views\Shared\_IrfanRating.cshtml" />
+    <Content Include="Views\Shared\_MovieRatingPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

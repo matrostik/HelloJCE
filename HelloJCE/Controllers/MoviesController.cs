@@ -115,6 +115,63 @@ namespace HelloJCE.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult RateItem(int id, int rate)
+        {
+            int userId = 142; // WebSecurity.CurrentUserId;
+            bool success = false;
+            string error = "";
+
+            try
+            {
+                //success = db.RegisterProductVote(userId, id, rate);
+                //if (Request.Cookies["rating" + id] != null)
+                //    return Content("false");
+                //Response.Cookies["rating" + id].Value = DateTime.Now.ToString();
+                //Response.Cookies["rating" + id].Expires = DateTime.Now.AddYears(1);
+                success = IncrementArticleRating(rate, id);
+
+            }
+            catch (Exception ex)
+            {
+                // get last error
+                if (ex.InnerException != null)
+                    while (ex.InnerException != null)
+                        ex = ex.InnerException;
+
+                error = ex.Message;
+            }
+
+            return Json(new { error = error, success = success, pid = id }, JsonRequestBehavior.AllowGet);
+        }
+
+        public bool IncrementArticleRating(int rate, int id)
+        {
+            var mov = db.Movies.Where(a => a.Id == id).First();
+            try
+            {
+                mov.Rating += rate;
+                mov.TotalRaters += 1;
+                db.Entry(mov).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+           
+            
+            //var ar = new ItemRating()
+            //{
+            //    ItemID = mov.Id,
+            //    Rating = mov.Rating,
+            //    TotalRaters = mov.TotalRaters,
+            //    AverageRating = Convert.ToDouble(mov.Rating) / Convert.ToDouble(mov.TotalRaters)
+            //};
+
+
+            return true;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -78,13 +78,13 @@ namespace HelloJCE.Controllers
         }
         public ItemRating IncrementArticleRating(int rate, int id)
         {
-            var mov = db.Movies.Where(a => a.ID == id).First();
+            var mov = db.Movies.Where(a => a.Id == id).First();
             mov.Rating += rate;
             mov.TotalRaters += 1;
             db.SaveChanges();
             var ar = new ItemRating()
             {
-                ItemID = mov.ID,
+                ItemID = mov.Id,
                 Rating = mov.Rating,
                 TotalRaters = mov.TotalRaters,
                 AverageRating = Convert.ToDouble(mov.Rating) / Convert.ToDouble(mov.TotalRaters)
