@@ -1,35 +1,76 @@
 ﻿@using HelloJCE.Models
 @model HelloJCE.Models.ItemRating
+@*@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/rate")
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<script src="~/Scripts/jquery.rating.js"></script>
+<script src="~/Scripts/jquery.rating.pack.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('.star').rating('readOnly', true);
+        $('#rater').hide();
+        $('#rated').mouseover(function () {
+            $('#rated').hide();
+            $('#rater').show();
+        });
+
+        $('.auto-submit-star').rating({
+            callback: function (value, link) {
+                $.ajax({
+                    type: "POST",
+                    url: "/List/Rate",
+                    data: $("#rate").serialize(),
+                    dataType: "text/plain",
+                    success: function (response) {
+                        if (response != 'false') {
+                            var data = eval('(' + response + ')');
+                            alert('Your rating has been recorded');
+                            $('#currentlyrated').html('Currently rated ' + data.AverageRating.toFixed(2) +
+                              ' by ' + data.TotalRaters + ' people');
+                        } else {
+                            alert('You have already rated this article');
+                        }
+                        $('#rater').hide();
+                        $('#rated').show();
+                    },
+                    error: function (response) {
+                        alert('There was an error.');
+                    }
+                });
+            }
+        });
+    });
+</script>*@
+
 
 
 <div id="rated">
     <div style="float:left">
         <form id="Form1" method="post" action="">
-            <input class="star {split:4}" type="radio" value="1" name="rating">@Utils.Check(0, 0.25, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="2" name="rating">@Utils.Check(0.25, 0.5, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="3" name="rating">@Utils.Check(0.5, 0.75, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="4" name="rating">@Utils.Check(0.75, 1, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="5" name="rating">@Utils.Check(1, 1.25, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="6" name="rating">@Utils.Check(1.25, 1.5, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="7" name="rating">@Utils.Check(1.5, 1.75, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="8" name="rating">@Utils.Check(1.75, 2, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="9" name="rating">@Utils.Check(2, 2.25, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="10" name="rating">@Utils.Check(2.25, 2.5, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="11" name="rating">@Utils.Check(2.5, 2.75, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="12" name="rating">@Utils.Check(2.75, 3, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="13" name="rating">@Utils.Check(3, 3.25, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="14" name="rating">@Utils.Check(3.25, 3.5, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="15" name="rating">@Utils.Check(3.5, 3.75, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="16" name="rating">@Utils.Check(3.75, 4, Model.AverageRating) />
-            <input class="star {split:4}" type="radio" value="17" name="rating">@Utils.Check(4, 4.25, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="18" name="rating">@Utils.Check(4.25, 4.5, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="19" name="rating">@Utils.Check(4.5, 4.75, Model.AverageRating)/>
-            <input class="star {split:4}" type="radio" value="20" name="rating">@Utils.Check(4.75, 5, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="1" name="rating" @Utils.Check(0, 0.25, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="2" name="rating" @Utils.Check(0.25, 0.5, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="3" name="rating" @Utils.Check(0.5, 0.75, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="4" name="rating" @Utils.Check(0.75, 1, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="5" name="rating" @Utils.Check(1, 1.25, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="6" name="rating" @Utils.Check(1.25, 1.5, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="7" name="rating" @Utils.Check(1.5, 1.75, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="8" name="rating" @Utils.Check(1.75, 2, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="9" name="rating" @Utils.Check(2, 2.25, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="10" name="rating" @Utils.Check(2.25, 2.5, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="11" name="rating" @Utils.Check(2.5, 2.75, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="12" name="rating" @Utils.Check(2.75, 3, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="13" name="rating" @Utils.Check(3, 3.25, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="14" name="rating" @Utils.Check(3.25, 3.5, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="15" name="rating" @Utils.Check(3.5, 3.75, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="16" name="rating" @Utils.Check(3.75, 4, Model.AverageRating) />
+            <input class="star {split:4}" type="radio" value="17" name="rating" @Utils.Check(4, 4.25, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="18" name="rating" @Utils.Check(4.25, 4.5, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="19" name="rating" @Utils.Check(4.5, 4.75, Model.AverageRating)/>
+            <input class="star {split:4}" type="radio" value="20" name="rating" @Utils.Check(4.75, 5, Model.AverageRating)/>
         </form>
     </div>
     <p id="currentlyrated" style="float:left;padding-left:20px;">
-        @Model.AverageRating > 0 ? "Currently rated " + Model.AverageRating.ToString("f") + " by " + Model.TotalRaters + " people"
-        : "<span style=\"color:red\">Not yet rated.  Be the first to rate this article!</span>"
+        @(Model.AverageRating > 0 ? "Currently rated " + Model.AverageRating.ToString("f") + " by " + Model.TotalRaters + " people" : "<span style=\"color:red\">Not yet rated.  Be the first to rate this article!</span>")
     </p>
 </div>
 <div style="clear:both"></div>
@@ -42,7 +83,7 @@
             <input class="auto-submit-star" type="radio" name="score" value="3" />
             <input class="auto-submit-star" type="radio" name="score" value="4" />
             <input class="auto-submit-star" type="radio" name="score" value="5" />
-            <input type="hidden" name="ArticleID" value="<%=Model.ArticleID %>" />
+            <input type="hidden" name="ItemID" value="@Model.ItemID" />
         </form>
     </div>
     <p style="float:left;padding-left:20px;">
@@ -50,7 +91,7 @@
     </p>
 </div>
 <div style="clear:both"></div>
-@Styles.Render("~/Content/rate")
+@*@Styles.Render("~/Content/rate")
 @section Scripts {
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/rate")
@@ -90,4 +131,4 @@
             });
         });
     </script>
-}
+}*@

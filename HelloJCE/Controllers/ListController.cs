@@ -37,7 +37,7 @@ namespace HelloJCE.Controllers
         public ActionResult Rate(FormCollection form)
         {
             var rate = Convert.ToInt32(form["Score"]);
-            var id = Convert.ToInt32(form["ArticleID"]);
+            var id = Convert.ToInt32(form["ItemID"]);
             if (Request.Cookies["rating" + id] != null)
                 return Content("false");
             Response.Cookies["rating" + id].Value = DateTime.Now.ToString();

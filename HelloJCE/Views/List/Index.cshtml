@@ -10,7 +10,7 @@
                 <h2 class="panel-title">DatePicker</h2>
             </div>
             <div class="panel-body">
-                <p >
+                <p>
                     bootstrap-datepicker sandbox
                     <div id="sandbox-container"><input type="text" class="form-control"></div>
                 </p>
@@ -40,7 +40,7 @@
             <div class="panel-body">
                 <p>
 
-
+                    
                 </p>
                 <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
             </div>
@@ -62,44 +62,82 @@
             </div>
         </div>
     </div><div class="col-md-4">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h2 class="panel-title">test5</h2>
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2 class="panel-title">test5</h2>
+            </div>
+            <div class="panel-body">
+                <p>
+
+
+                </p>
+                <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+            </div>
         </div>
-        <div class="panel-body">
-            <p>
+    </div><div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2 class="panel-title">test6</h2>
+            </div>
+            <div class="panel-body">
+                <p>
 
 
-            </p>
-            <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
-        </div>
-    </div>
-</div><div class="col-md-4">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h2 class="panel-title">test6</h2>
-        </div>
-        <div class="panel-body">
-            <p>
-
-
-            </p>
-            <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+                </p>
+                <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+            </div>
         </div>
     </div>
 </div>
-    </div>
 
 
-    @Styles.Render("~/Content/date")
-    @section Scripts {
-        @Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/date")
-        <script type="text/javascript">
-            $('#sandbox-container input').datepicker({
-                format: "dd/mm/yyyy",
-                autoclose: true,
-                todayHighlight: true
+@Styles.Render("~/Content/date")
+@Styles.Render("~/Content/rate")
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/date")
+    @Scripts.Render("~/bundles/rate")
+    <script type="text/javascript">
+        $('#sandbox-container input').datepicker({
+            format: "dd/mm/yyyy",
+            autoclose: true,
+            todayHighlight: true
+        });
+
+        $(function () {
+            $('.star').rating('readOnly', true);
+            $('#rater').hide();
+            $('#rated').mouseover(function () {
+                $('#rated').hide();
+                $('#rater').show();
             });
-        </script>
-    }
+
+            $('.auto-submit-star').rating({
+                callback: function (value, link) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/List/Rate",
+                        data: $("#rate").serialize(),
+                        dataType: "text/plain",
+                        success: function (response) {
+                            if (response != 'false') {
+                                var data = eval('(' + response + ')');
+                                alert('Your rating has been recorded');
+                                $('#currentlyrated').html('Currently rated ' + data.AverageRating.toFixed(2) +
+                                  ' by ' + data.TotalRaters + ' people');
+                            } else {
+                                alert('You have already rated this article');
+                            }
+                            $('#rater').hide();
+                            $('#rated').show();
+                        },
+                        error: function (response) {
+                            alert('There was an error.');
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
+}
