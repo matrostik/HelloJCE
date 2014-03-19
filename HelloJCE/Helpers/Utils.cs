@@ -11,7 +11,7 @@ namespace HelloJCE.Helpers
         {
             double toCheck = totalRaters == 0 ? 0 : Convert.ToDouble(rating) / Convert.ToDouble(totalRaters);
             //string str = toCheck > lower && toCheck <= upper ? " checked=\"checked\"" : null;
-            return toCheck > lower && toCheck <= upper ? " checked=\"checked\"" : null;
+            return toCheck > lower && toCheck <= upper ? " checked=checked" : null;
         }
     }
 }

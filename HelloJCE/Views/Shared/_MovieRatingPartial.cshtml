@@ -1,11 +1,12 @@
 ﻿@using HelloJCE.Helpers
 @model HelloJCE.Models.Movie
 
-<div class="ratting-item" data-pid="@Model.Id">
-    <input class="rating" name="vote" type="radio" value="1" @Utils.CheckRate(0, 1, Model.Rating , Model.TotalRaters) />
-    <input class="rating" name="vote" type="radio" value="2" @Utils.CheckRate(1, 2, Model.Rating , Model.TotalRaters) />
-    <input class="rating" name="vote" type="radio" value="3" @Utils.CheckRate(2, 3, Model.Rating , Model.TotalRaters) />
-    <input class="rating" name="vote" type="radio" value="4" @Utils.CheckRate(3, 4, Model.Rating , Model.TotalRaters) />
-    <input class="rating" name="vote" type="radio" value="5" @Utils.CheckRate(4, 5, Model.Rating , Model.TotalRaters) />
+<div class="ratting-item" id="@Model.Id" data-pid="@Model.Id">
+    <input class="rating" name="vote" type="radio" value="1" @Utils.CheckRate(0, 1, Model.Rating, Model.TotalRaters) />
+    <input class="rating" name="vote" type="radio" value="2" @Utils.CheckRate(1, 2, Model.Rating, Model.TotalRaters) />
+    <input class="rating" name="vote" type="radio" value="3" @Utils.CheckRate(2, 3, Model.Rating, Model.TotalRaters) />
+    <input class="rating" name="vote" type="radio" value="4" @Utils.CheckRate(3, 4, Model.Rating, Model.TotalRaters) />
+    <input class="rating" name="vote" type="radio" value="5" @Utils.CheckRate(4, 5, Model.Rating, Model.TotalRaters) />
 </div>
+
 <span class="result"></span>
