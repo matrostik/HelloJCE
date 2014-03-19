@@ -37,6 +37,11 @@ namespace HelloJCE
                       "~/Scripts/jquery.rating.pack.js"));
             bundles.Add(new StyleBundle("~/Content/rate").Include(
                      "~/Content/jquery.rating.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/rate2").Include(
+                     "~/Scripts/rating.js"));
+            bundles.Add(new StyleBundle("~/Content/rate2").Include(
+                     "~/Content/rating.css"));
         }
     }
 }

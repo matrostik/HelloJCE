@@ -183,6 +183,7 @@
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\datepicker3.css" />
     <Content Include="Content\jquery.rating.css" />
+    <Content Include="Content\rating.css" />
     <Content Include="Content\slate.css" />
     <Content Include="Content\superhero.css" />
     <Content Include="favicon.ico" />
@@ -205,6 +206,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\rating.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
@@ -241,6 +243,7 @@
     <Content Include="Views\Movies\Edit.cshtml" />
     <Content Include="Views\Movies\Index.cshtml" />
     <Content Include="Views\Shared\_RatingPartial.cshtml" />
+    <Content Include="Views\Shared\_IrfanRating.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

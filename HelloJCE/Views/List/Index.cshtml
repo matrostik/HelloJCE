@@ -25,8 +25,8 @@
             </div>
             <div class="panel-body">
                 <p>
-                    FyneWorks jQuery Star Rating Plugin
-                    @Html.Partial("_RatingPartial")
+                    FyneWorks jQuery Star Rating Plugin (too ugly!!)
+                    @*@Html.Partial("_RatingPartial")*@
                 </p>
                 <p><a class="btn btn-default" href="http://www.fyneworks.com/jquery/star-rating/">Learn more &raquo;</a></p>
             </div>
@@ -35,14 +35,13 @@
     <div class="col-md-4">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h2 class="panel-title">test3</h2>
+                <h2 class="panel-title">Irfan Star Rating (jQuery Plugin)</h2>
             </div>
             <div class="panel-body">
                 <p>
-
-                    
+                  @Html.Partial("_IrfanRating")
                 </p>
-                <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+                <p><a class="btn btn-default" href="http://irfandurmus.com/projects/jquery-star-rating-plugin/">Learn more &raquo;</a></p>
             </div>
         </div>
     </div>
@@ -92,11 +91,14 @@
 
 
 @Styles.Render("~/Content/date")
-@Styles.Render("~/Content/rate")
+@Styles.Render("~/Content/rate2")
+@*@Styles.Render("~/Content/rate")*@
 @section Scripts {
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/date")
-    @Scripts.Render("~/bundles/rate")
+    @*@Scripts.Render("~/bundles/rate")*@
+@Scripts.Render("~/bundles/rate2")
+
     <script type="text/javascript">
         $('#sandbox-container input').datepicker({
             format: "dd/mm/yyyy",
@@ -104,40 +106,91 @@
             todayHighlight: true
         });
 
+
         $(function () {
-            $('.star').rating('readOnly', true);
-            $('#rater').hide();
-            $('#rated').mouseover(function () {
-                $('#rated').hide();
-                $('#rater').show();
+            //tabs: http://twitter.github.com/bootstrap/javascript.html#tabs 
+            $('#myTab a').click(function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            })
+
+            // ratting system: https://github.com/irfan/jquery-star-rating
+            $('.ratting-item').rating(function (vote, event) {
+                var anchor = $(event.currentTarget),
+                    pid = anchor.closest(".ratting-item").data("pid"),
+                    url = '@Url.Action("RateItem", "List")';
+
+                // show message while doing the database round trip
+                $('.ratting-item[data-pid=' + pid + ']')
+                    .next()
+                    .text("Placing your vote...");
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    data: { rate: vote, id: pid },
+                    success: function (data) {
+
+                        if (data.success) {
+                            // all went well, here you can say Thank you
+                            $('.ratting-item[data-pid=' + data.pid + ']')
+                                .next()
+                                .text("Voted! (product id: " + data.pid + ")");
+                        }
+                        else {
+                            // There must be an Exception error, let's show it
+                            $('.ratting-item[data-pid=' + data.pid + ']')
+                                .next()
+                                .text("Something went wrong...");
+                        }
+                    },
+                    error: function (err) {
+                        // the call thrown an error
+                        $('.result').text(err);
+                    },
+                    complete: function () {
+                        //$(".loading").hide();
+                    }
+                });
             });
 
-            $('.auto-submit-star').rating({
-                callback: function (value, link) {
-                    $.ajax({
-                        type: "POST",
-                        url: "/List/Rate",
-                        data: $("#rate").serialize(),
-                        dataType: "text/plain",
-                        success: function (response) {
-                            if (response != 'false') {
-                                var data = eval('(' + response + ')');
-                                alert('Your rating has been recorded');
-                                $('#currentlyrated').html('Currently rated ' + data.AverageRating.toFixed(2) +
-                                  ' by ' + data.TotalRaters + ' people');
-                            } else {
-                                alert('You have already rated this article');
-                            }
-                            $('#rater').hide();
-                            $('#rated').show();
-                        },
-                        error: function (response) {
-                            alert('There was an error.');
-                        }
-                    });
-                }
-            });
         });
+
+
+        //$(function () {
+        //    $('.star').rating('readOnly', true);
+        //    $('#rater').hide();
+        //    $('#rated').mouseover(function () {
+        //        $('#rated').hide();
+        //        $('#rater').show();
+        //    });
+
+        //    $('.auto-submit-star').rating({
+        //        callback: function (value, link) {
+        //            $.ajax({
+        //                type: "POST",
+        //                url: "/List/Rate",
+        //                data: $("#rate").serialize(),
+        //                dataType: "text/plain",
+        //                success: function (response) {
+        //                    if (response != 'false') {
+        //                        var data = eval('(' + response + ')');
+        //                        alert('Your rating has been recorded');
+        //                        $('#currentlyrated').html('Currently rated ' + data.AverageRating.toFixed(2) +
+        //                          ' by ' + data.TotalRaters + ' people');
+        //                    } else {
+        //                        alert('You have already rated this article');
+        //                    }
+        //                    $('#rater').hide();
+        //                    $('#rated').show();
+        //                },
+        //                error: function (response) {
+        //                    alert('There was an error.');
+        //                }
+        //            });
+        //        }
+        //    });
+        //});
 
     </script>
 }
