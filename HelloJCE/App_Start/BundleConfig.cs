@@ -38,10 +38,10 @@ namespace HelloJCE
             bundles.Add(new StyleBundle("~/Content/rate").Include(
                      "~/Content/jquery.rating.css"));
 
-            bundles.Add(new ScriptBundle("~/bundles/rate2").Include(
-                     "~/Scripts/rating.js"));
-            bundles.Add(new StyleBundle("~/Content/rate2").Include(
-                     "~/Content/rating.css"));
+            bundles.Add(new ScriptBundle("~/bundles/ifranrate").Include(
+                     "~/Scripts/irfan.rating.js"));
+            bundles.Add(new StyleBundle("~/Content/ifranrate").Include(
+                     "~/Content/ifran.rating.css"));
         }
     }
 }
