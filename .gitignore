@@ -156,3 +156,5 @@ $RECYCLE.BIN/
 .DS_Store
 HelloJCE/App_Data/aspnet-HelloJCE-20140315044932.mdf
 HelloJCE/App_Data/aspnet-HelloJCE-20140315044932_log.ldf
+HelloJCE/App_Data/aspnet-HelloJCE.mdf
+HelloJCE/App_Data/aspnet-HelloJCE_log.ldf
