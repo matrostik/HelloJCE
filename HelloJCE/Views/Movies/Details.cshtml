@@ -24,6 +24,7 @@
 
         <dd>
             <img src="@Model.Image" height="100" />
+            <p> @Html.Partial("_MovieRatingPartial", Model)</p>
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.ReleaseDate)
@@ -55,3 +56,51 @@
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "label label-warning" }) |
     @Html.ActionLink("Back to List", "Index", null, new { @class = "label label-primary" })
 </p>
+
+@Styles.Render("~/Content/rate2")
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/rate2")
+
+    <script type="text/javascript">
+        // ratting system: https://github.com/irfan/jquery-star-rating
+        $('.ratting-item').rating(function (vote, event) {
+            var anchor = $(event.currentTarget),
+                pid = anchor.closest(".ratting-item").data("pid"),
+                url = '@Url.Action("RateItem", "Movies")';
+
+            // show message while doing the database round trip
+            $('.ratting-item[data-pid=' + pid + ']')
+                .next()
+                .text("Placing your vote...");
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                data: { rate: vote, id: pid },
+                success: function (data) {
+
+                    if (data.success) {
+                        // all went well, here you can say Thank you
+                        $('.ratting-item[data-pid=' + data.pid + ']')
+                            .next()
+                            .text("Voted! (product id: " + data.pid + ")");
+                    }
+                    else {
+                        // There must be an Exception error, let's show it
+                        $('.ratting-item[data-pid=' + data.pid + ']')
+                            .next()
+                            .text("Something went wrong...");
+                    }
+                },
+                error: function (err) {
+                    // the call thrown an error
+                    $('.result').text(err);
+                },
+                complete: function () {
+                    //$(".loading").hide();
+                }
+            });
+        });
+    </script>
+}
