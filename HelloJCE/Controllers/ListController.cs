@@ -1,6 +1,7 @@
 ﻿using HelloJCE.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -43,15 +44,20 @@ namespace HelloJCE.Controllers
 
         public ActionResult RateItem(int id, int rate)
         {
-            int userId = 142; // WebSecurity.CurrentUserId;
             bool success = false;
             string error = "";
-
+            double totalRaters = 0;
             try
             {
-                //success = db.RegisterProductVote(userId, id, rate);
+                if (Request.Cookies["rating" + id] != null)
+                    return Json(new { error = error, success = success, pid = id, total = totalRaters }, JsonRequestBehavior.AllowGet);
+                Response.Cookies["rating" + id].Value = DateTime.Now.ToString();
+                Response.Cookies["rating" + id].Expires = DateTime.Now.AddYears(1);
+
+                totalRaters = IncrementRating(rate, id);
+                success = true;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 // get last error
                 if (ex.InnerException != null)
@@ -60,8 +66,26 @@ namespace HelloJCE.Controllers
 
                 error = ex.Message;
             }
-
-            return Json(new { error = error, success = success, pid = id }, JsonRequestBehavior.AllowGet);
+            if (totalRaters != 0)
+                success = true;
+            return Json(new { error = error, success = success, pid = id, total = totalRaters }, JsonRequestBehavior.AllowGet);
+        }
+        public int IncrementRating(int rate, int id)
+        {
+            //var mov = db.Movies.Where(a => a.Id == id).First();
+            //try
+            //{
+            //    mov.Rating += rate;
+            //    mov.TotalRaters += 1;
+            //    db.Entry(mov).State = EntityState.Modified;
+            //    db.SaveChanges();
+            //}
+            //catch (Exception)
+            //{
+            //    return 0;
+            //}
+            //return mov.TotalRaters;
+            return 7;
         }
 
         [HttpPost]

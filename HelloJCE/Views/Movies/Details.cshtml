@@ -1,4 +1,4 @@
-﻿@model HelloJCE.Models.Movie
+﻿@model HelloJCE.Models.MovieDetailsModel
 
 @{
     ViewBag.Title = "Details";
@@ -9,60 +9,110 @@
 
 <div>
     <h4>Movie</h4>
-	<hr />
+    <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Title)
+            @Html.DisplayNameFor(model => model.Movie.Title)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Title)
+            @Html.DisplayFor(model => model.Movie.Title)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Image)
+            @Html.DisplayNameFor(model => model.Movie.Image)
         </dt>
 
         <dd>
-            <img src="@Model.Image" height="100" />
-            <p> @Html.Partial("_MovieRatingPartial", Model)</p>
+            <img src="@Model.Movie.Image" height="100" />
+            <p> @Html.Partial("_MovieRatingPartial", Model.Movie)</p>
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.ReleaseDate)
+            @Html.DisplayNameFor(model => model.Movie.ReleaseDate)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.ReleaseDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Genre)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Genre)
+            @Html.DisplayFor(model => model.Movie.ReleaseDate)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Price)
+            @Html.DisplayNameFor(model => model.Movie.Genre)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Price)
+            @Html.DisplayFor(model => model.Movie.Genre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Movie.Price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Movie.Price)
         </dd>
 
     </dl>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Movie.Id }, new { @class = "label label-warning" }) |
+        @Html.ActionLink("Back to List", "Index", null, new { @class = "label label-primary" })
+    </p>
+    <p>
+        @foreach (var item in Model.Movie.Comments)
+        {
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <span class="label label-default">[ @item.Date.ToString("dd MMMM yyyy  HH:mm") @item.UserName wrote: ]</span>    @item.Text
+                    <br />
+                    @*@Html.ActionLink("Delete", "DeleteComment", new { id = item.Id }, new { @class = "label label-danger", @id = "confirmDelete" })*@
+                    <a class="label label-danger" data-toggle="modal" id="deleteComment" href="#confirmDeleteComment" data-id="@item.Id">Delete</a>
+                </div>
+            </div>
+        }
+    </p>
+
+
+    <div class="modal fade" id="confirmDelete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Delete comment</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this?</p>
+                </div>
+                <div class="modal-footer">
+                    @using (Html.BeginForm("DeleteComment", "Movies"))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("commentId");
+                        <input type="submit" value="Delete" class="btn btn-primary" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    }
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+    <p>
+        @Html.Partial("_CreateComment", Model.Comment)
+    </p>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { @class = "label label-warning" }) |
-    @Html.ActionLink("Back to List", "Index", null, new { @class = "label label-primary" })
-</p>
 
 @Styles.Render("~/Content/ifranrate")
 @section Scripts {
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/ifranrate")
-
+    @Scripts.Render("~/bundles/bootstrap")
     <script type="text/javascript">
+        //modal comment delete confirm 
+        $(document).on("click", "#deleteComment", function () {
+            var id = $(this).data('id');
+            $(".modal-footer #commentId").val(id);
+            $('#confirmDelete').modal('show');
+        });
+
         // ratting system: https://github.com/irfan/jquery-star-rating
         $('.ratting-item').rating(function (vote, event) {
             var anchor = $(event.currentTarget),
@@ -84,18 +134,18 @@
                         // all went well, here you can say Thank you
                         $('.ratting-item[data-pid=' + data.pid + ']')
                             .next()
-                            .text("Voted! (product id: " + data.pid + ")");
+                            .text("Voted! Total votes: " + data.total + "");
                     }
                     else {
                         // There must be an Exception error, let's show it
                         $('.ratting-item[data-pid=' + data.pid + ']')
                             .next()
-                            .text("Something went wrong...");
+                            .text("You have already rated");
                     }
                 },
                 error: function (err) {
                     // the call thrown an error
-                    $('.result').text(err);
+                    //$('.result').text(err);
                 },
                 complete: function () {
                     //$(".loading").hide();

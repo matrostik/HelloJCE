@@ -17,7 +17,8 @@ namespace HelloJCE.Controllers
         // GET: /Movies/
         public ActionResult Index()
         {
-            return View(db.Movies.ToList());
+            var m = db.Movies.Include(c => c.Comments).ToList();
+            return View(m);
         }
 
         // GET: /Movies/Details/5
@@ -27,13 +28,23 @@ namespace HelloJCE.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Movie movie = db.Movies.Find(id);
+            Movie movie = db.Movies.Include(c => c.Comments).FirstOrDefault(m => m.Id == id);
             if (movie == null)
             {
                 return HttpNotFound();
             }
-            return View(movie);
+            MovieDetailsModel mdm = new MovieDetailsModel();
+            mdm.Movie = movie;
+            mdm.Comment = new Comment() { MovieId=movie.Id };
+
+            return View(mdm);
         }
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Details()
+        //{
+        //}
 
         // GET: /Movies/Create
         public ActionResult Create()
@@ -46,7 +57,7 @@ namespace HelloJCE.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Title,Image,ReleaseDate,Genre,Price")] Movie movie)
+        public ActionResult Create([Bind(Include = "Id,Title,Image,ReleaseDate,Genre,Price")] Movie movie)
         {
             if (ModelState.IsValid)
             {
@@ -117,19 +128,18 @@ namespace HelloJCE.Controllers
 
         public ActionResult RateItem(int id, int rate)
         {
-            int userId = 142; // WebSecurity.CurrentUserId;
             bool success = false;
             string error = "";
-
+            double totalRaters = 0;
             try
             {
-                //success = db.RegisterProductVote(userId, id, rate);
-                //if (Request.Cookies["rating" + id] != null)
-                //    return Content("false");
-                //Response.Cookies["rating" + id].Value = DateTime.Now.ToString();
-                //Response.Cookies["rating" + id].Expires = DateTime.Now.AddYears(1);
-                success = IncrementArticleRating(rate, id);
+                if (Request.Cookies["rating" + id] != null)
+                    return Json(new { error = error, success = success, pid = id, total = totalRaters }, JsonRequestBehavior.AllowGet);
+                Response.Cookies["rating" + id].Value = DateTime.Now.ToString();
+                Response.Cookies["rating" + id].Expires = DateTime.Now.AddYears(1);
 
+                totalRaters = IncrementRating(rate, id);
+                success = true;
             }
             catch (Exception ex)
             {
@@ -140,11 +150,12 @@ namespace HelloJCE.Controllers
 
                 error = ex.Message;
             }
-
-            return Json(new { error = error, success = success, pid = id }, JsonRequestBehavior.AllowGet);
+            if (totalRaters != 0)
+                success = true;
+            return Json(new { error = error, success = success, pid = id, total = totalRaters }, JsonRequestBehavior.AllowGet);
         }
 
-        public bool IncrementArticleRating(int rate, int id)
+        public int IncrementRating(int rate, int id)
         {
             var mov = db.Movies.Where(a => a.Id == id).First();
             try
@@ -156,20 +167,53 @@ namespace HelloJCE.Controllers
             }
             catch (Exception)
             {
-                return false;
+                return 0;
             }
-           
-            
-            //var ar = new ItemRating()
-            //{
-            //    ItemID = mov.Id,
-            //    Rating = mov.Rating,
-            //    TotalRaters = mov.TotalRaters,
-            //    AverageRating = Convert.ToDouble(mov.Rating) / Convert.ToDouble(mov.TotalRaters)
-            //};
+            return mov.TotalRaters;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateComment([Bind(Include = "Id,MovieId,UserName,Text")] Comment comment)
+        {
+            var mdm = new MovieDetailsModel();
+            mdm.Movie = db.Movies.Find(comment.MovieId);
+            mdm.Comment = comment;
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    comment.Date = DateTime.Now;
+                    Movie movie = db.Movies.Find(comment.MovieId);
+                    movie.Comments.Add(comment);
+                    db.SaveChanges();
+                }
+                catch (Exception)
+                {
+
+                }
+                return RedirectToAction("Details", new { id = comment.MovieId });
+            }
+            //ModelState.AddModelError("", "Some Error.");
+            return View("Details", mdm);
+        }
 
 
-            return true;
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteComment(int commentId)
+        {
+            Comment com = db.Comments.Find(commentId);
+            try
+            {
+                db.Comments.Remove(com);
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                
+            }
+            return RedirectToAction("Details", new { id = com.MovieId });
         }
 
         protected override void Dispose(bool disposing)

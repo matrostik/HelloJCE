@@ -84,18 +84,18 @@
                         // all went well, here you can say Thank you
                         $('.ratting-item[data-pid=' + data.pid + ']')
                             .next()
-                            .text("Voted! (product id: " + data.pid + ")");
+                            .text("Voted! Total votes: " + data.total + "");
                     }
                     else {
                         // There must be an Exception error, let's show it
                         $('.ratting-item[data-pid=' + data.pid + ']')
                             .next()
-                            .text("Something went wrong...");
+                            .text("You have already rated");
                     }
                 },
                 error: function (err) {
                     // the call thrown an error
-                    $('.result').text(err);
+                    //$('.result').text(err);
                 },
                 complete: function () {
                     //$(".loading").hide();

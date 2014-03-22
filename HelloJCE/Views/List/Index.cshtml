@@ -38,7 +38,7 @@
             </div>
             <div class="panel-body">
                 <p>
-                  @Html.Partial("_IrfanRating")
+                    @Html.Partial("_IrfanRating")
                 </p>
                 <p><a class="btn btn-default" href="http://irfandurmus.com/projects/jquery-star-rating-plugin/">Learn more &raquo;</a></p>
             </div>
@@ -49,14 +49,34 @@
     <div class="col-md-4">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h2 class="panel-title">test4</h2>
+                <h2 class="panel-title">Bootstrap Modal Dialog</h2>
             </div>
             <div class="panel-body">
-                <p>
 
-
-                </p>
-                <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+                <div class="modal fade" id="myModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Modal title</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>One fine body&hellip;</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+                <div id="sandbox-container">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                        Launch modal
+                    </button>
+                    <a class="btn" data-toggle="modal" href="#myModal">Launch modal</a>
+                    <a class="btn btn-default" href="">Learn more &raquo;</a>
+                </div>
             </div>
         </div>
     </div><div class="col-md-4">
@@ -95,7 +115,8 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/date")
     @*@Scripts.Render("~/bundles/rate")*@
-@Scripts.Render("~/bundles/ifranrate")
+    @Scripts.Render("~/bundles/ifranrate")
+    @Scripts.Render("~/bundles/bootstrap")
 
     <script type="text/javascript">
         $('#sandbox-container input').datepicker({
@@ -105,17 +126,11 @@
         });
 
         $(function () {
-            //tabs: http://twitter.github.com/bootstrap/javascript.html#tabs 
-            $('#myTab a').click(function (e) {
-                e.preventDefault();
-                $(this).tab('show');
-            })
-
             // ratting system: https://github.com/irfan/jquery-star-rating
             $('.ratting-item').rating(function (vote, event) {
                 var anchor = $(event.currentTarget),
                     pid = anchor.closest(".ratting-item").data("pid"),
-                    url = '@Url.Action("RateItem", "List")';
+                    url = '@Url.Action("RateItem", "Movies")';
 
                 // show message while doing the database round trip
                 $('.ratting-item[data-pid=' + pid + ']')
@@ -132,18 +147,18 @@
                             // all went well, here you can say Thank you
                             $('.ratting-item[data-pid=' + data.pid + ']')
                                 .next()
-                                .text("Voted! (product id: " + data.pid + ")");
+                                .text("Voted! Total votes: " + data.total + "");
                         }
                         else {
                             // There must be an Exception error, let's show it
                             $('.ratting-item[data-pid=' + data.pid + ']')
                                 .next()
-                                .text("Something went wrong...");
+                                .text("You have already rated");
                         }
                     },
                     error: function (err) {
                         // the call thrown an error
-                        $('.result').text(err);
+                        //$('.result').text(err);
                     },
                     complete: function () {
                         //$(".loading").hide();
