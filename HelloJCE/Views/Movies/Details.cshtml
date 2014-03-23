@@ -64,7 +64,7 @@
                     <span class="label label-default">[ @item.Date.ToString("dd MMMM yyyy  HH:mm") @item.UserName wrote: ]</span>    @item.Text
                     <br />
                     @*@Html.ActionLink("Delete", "DeleteComment", new { id = item.Id }, new { @class = "label label-danger", @id = "confirmDelete" })*@
-                    <a class="label label-danger" data-toggle="modal" id="deleteComment" href="#confirmDeleteComment" data-id="@item.Id">Delete</a>
+                    <a class="label label-danger" data-toggle="modal" id="deleteComment" href="#confirmDeleteComment" data-id="@item.Id" data-url="/Movies/DeleteComment">Delete</a>
                 </div>
             </div>
         }
@@ -82,10 +82,10 @@
                     <p>Are you sure you want to delete this?</p>
                 </div>
                 <div class="modal-footer">
-                    @using (Html.BeginForm("DeleteComment", "Movies"))
+                    @using (Html.BeginForm("", "", FormMethod.Post, new { id = "confirmDeleteForm" }))
                     {
                         @Html.AntiForgeryToken()
-                        @Html.Hidden("commentId");
+                        @Html.Hidden("itemId");
                         <input type="submit" value="Delete" class="btn btn-primary" />
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     }
@@ -106,10 +106,13 @@
     @Scripts.Render("~/bundles/ifranrate")
     @Scripts.Render("~/bundles/bootstrap")
     <script type="text/javascript">
+
         //modal comment delete confirm 
         $(document).on("click", "#deleteComment", function () {
-            var id = $(this).data('id');
-            $(".modal-footer #commentId").val(id);
+            var id = $(this).data('id');//select id to delete
+            var url = $(this).data('url');//select action url
+            $(".modal-footer #itemId").val(id);
+            $(".modal-footer #confirmDeleteForm").attr('action', url);
             $('#confirmDelete').modal('show');
         });
 
