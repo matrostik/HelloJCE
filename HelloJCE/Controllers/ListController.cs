@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
 
 namespace HelloJCE.Controllers
 {
@@ -12,8 +13,21 @@ namespace HelloJCE.Controllers
     {
         //
         // GET: /List/
-        public ActionResult Index() 
+        public ActionResult Index()
         {
+            string currentUserId = User.Identity.GetUserId();
+
+            ApplicationDbContext adb = new ApplicationDbContext();
+            
+            foreach (var item in adb.Roles)
+            {
+                ViewBag.Roles += item.Name + " ";
+            }
+            foreach (var item in adb.Users)
+            {
+                string rs = string.Join(",", item.Roles.Select(t => t.Role.Name).ToList<string>());
+                ViewBag.Users += item.UserName + "("+rs+")";
+            }
             ItemRating ir = new ItemRating()
             {
                 ItemID = 1,
