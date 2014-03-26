@@ -7,4 +7,4 @@ Subject: Complete Registration Process
 Hello @ViewBag.UserName,
 
 To complete the registration process click on this link
-/Account/RegisterConfirmation/@ViewBag.ConfirmationToken
+@Request.Url.Host/Account/RegisterConfirmation/@ViewBag.ConfirmationToken

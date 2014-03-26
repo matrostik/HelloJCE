@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using Postal;
 
 namespace HelloJCE.Controllers
 {
@@ -13,7 +14,7 @@ namespace HelloJCE.Controllers
     {
         //
         // GET: /List/
-        public ActionResult Index()
+        public ActionResult Index() 
         {
             ViewBag.User = User.Identity.Name;
 
@@ -27,8 +28,12 @@ namespace HelloJCE.Controllers
             {
                 ViewBag.Users += u.UserName + "(" + string.Join(",", u.Roles.Select(r => r.Role.Name).ToList<string>()) + ") ";
             }
-			
 
+            dynamic email = new Email("RegEmail");
+            email.To = "matrostik@gmail.com";
+            email.UserName = "Test";
+            email.ConfirmationToken = "1234567890";
+            email.Send();
 
             ItemRating ir = new ItemRating()
             {
