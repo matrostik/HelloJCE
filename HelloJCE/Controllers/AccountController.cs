@@ -9,6 +9,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using HelloJCE.Models;
+using Postal;
+using System.Data.Entity;
+using System.Web.Security;
 
 namespace HelloJCE.Controllers
 {
@@ -46,7 +49,7 @@ namespace HelloJCE.Controllers
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindAsync(model.UserName, model.Password);
-                if (user != null)
+                if (user != null && user.IsConfirmed)
                 {
                     await SignInAsync(user, model.RememberMe);
                     return RedirectToLocal(returnUrl);
@@ -78,21 +81,131 @@ namespace HelloJCE.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser() { UserName = model.UserName };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                // Attempt to register the user
+                if (ModelState.IsValid)
                 {
-                    await SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    string confirmationToken = CreateConfirmationToken();
+                    var user = new ApplicationUser()
+                    {
+                        UserName = model.UserName,
+                        Email = model.Email,
+                        ConfirmationToken = confirmationToken,
+                        IsConfirmed = false
+                    };
+                    var result = await UserManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        SendEmailConfirmation(model.Email, model.UserName, confirmationToken);
+                        return RedirectToAction("RegisterStepTwo", "Account");
+                    }
+                    else
+                    {
+                        AddErrors(result);
+                    }
                 }
-                else
-                {
-                    AddErrors(result);
-                }
+                //var user = new ApplicationUser() { UserName = model.UserName };
+                //var result = await UserManager.CreateAsync(user, model.Password);
+
+                //if (user.UserName.Equals("Ros"))
+                //{
+                //    await UserManager.AddToRoleAsync(user.Id, "Admin");
+                //    await UserManager.AddToRoleAsync(user.Id, "Moder");
+                //    await UserManager.AddToRoleAsync(user.Id, "Tutor");
+                //}
+
+                //await UserManager.AddToRoleAsync(user.Id, "User");
+                //if (result.Succeeded)
+                //{
+                //    await SignInAsync(user, isPersistent: false);
+                //    return RedirectToAction("Index", "Home");
+                //}
+                //else
+                //{
+                //    AddErrors(result);
+                //}
             }
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult RegisterStepTwo()
+        {
+            return View();
+        }
+
+
+        private string CreateConfirmationToken()
+        {
+            return ShortGuid.NewGuid();
+        }
+
+        private void SendEmailConfirmation(string to, string username, string confirmationToken)
+        {
+            dynamic email = new Email("RegEmail");
+            email.To = to;
+            email.UserName = username;
+            email.ConfirmationToken = confirmationToken;
+            email.Send();
+        }
+
+        private async Task<bool> ConfirmAccount(string confirmationToken)
+        {
+            ApplicationDbContext context = new ApplicationDbContext();
+            ApplicationUser user = context.Users.SingleOrDefault(u => u.ConfirmationToken == confirmationToken);
+            if (user != null)
+            {
+                user.IsConfirmed = true;
+                DbSet<ApplicationUser> dbSet = context.Set<ApplicationUser>();
+                dbSet.Attach(user);
+                context.Entry(user).State = EntityState.Modified;
+                context.SaveChanges();
+
+                var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+                if (!rm.RoleExists("Admin"))
+                    rm.Create(new IdentityRole("Admin"));
+                if (!rm.RoleExists("Moder"))
+                    rm.Create(new IdentityRole("Moder"));
+                if (!rm.RoleExists("Tutor"))
+                    rm.Create(new IdentityRole("Tutor"));
+                if (!rm.RoleExists("User"))
+                    rm.Create(new IdentityRole("User"));
+
+                if (user.UserName.Equals("Ros"))
+                {
+                    await UserManager.AddToRoleAsync(user.Id, "Admin");
+                    await UserManager.AddToRoleAsync(user.Id, "Moder");
+                    await UserManager.AddToRoleAsync(user.Id, "Tutor");
+                }
+
+                await UserManager.AddToRoleAsync(user.Id, "User");
+
+                return true;
+            }
+            return false;
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> RegisterConfirmation(string Id)
+        {
+            if (await ConfirmAccount(Id))
+            {
+                return RedirectToAction("ConfirmationSuccess");
+            }
+            return RedirectToAction("ConfirmationFailure");
+        }
+
+        [AllowAnonymous]
+        public ActionResult ConfirmationSuccess()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        public ActionResult ConfirmationFailure()
+        {
+            return View();
         }
 
         //
