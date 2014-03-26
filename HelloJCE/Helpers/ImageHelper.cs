@@ -21,16 +21,13 @@ namespace HelloJCE.Helpers
             return writer.InnerWriter.ToString();
         }
 
-        public static class ImageHelper
+        public static string Image(this HtmlHelper helper, string src, string altText, string height)
         {
-            public static MvcHtmlString Image(this HtmlHelper helper, string src, string altText, string height)
-            {
-                var builder = new TagBuilder("img");
-                builder.MergeAttribute("src", src);
-                builder.MergeAttribute("alt", altText);
-                builder.MergeAttribute("height", height);
-                return MvcHtmlString.Create(builder.ToString(TagRenderMode.SelfClosing));
-            }
+            var builder = new TagBuilder("img");
+            builder.MergeAttribute("src", src);
+            builder.MergeAttribute("alt", altText);
+            builder.MergeAttribute("height", height);
+            return builder.ToString(TagRenderMode.SelfClosing);
         }
     }
 }

@@ -175,6 +175,7 @@
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ItemRating.cs" />
+    <Compile Include="Models\ListViewModel.cs" />
     <Compile Include="Models\Movie.cs" />
     <Compile Include="Models\MovieDetailsModel.cs" />
     <Compile Include="Models\ShortGuid.cs" />

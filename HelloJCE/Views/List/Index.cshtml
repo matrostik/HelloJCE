@@ -1,4 +1,4 @@
-﻿@model HelloJCE.Models.ItemRating
+﻿@model HelloJCE.Models.ListViewModel
 @{
     ViewBag.Title = "Testing";
 }
@@ -38,7 +38,7 @@
             </div>
             <div class="panel-body">
                 <p>
-                    @Html.Partial("_IrfanRating")
+                    @Html.Partial("_IrfanRating", Model.rating)
                 </p>
                 <p><a class="btn btn-default" href="http://irfandurmus.com/projects/jquery-star-rating-plugin/">Learn more &raquo;</a></p>
             </div>
@@ -82,12 +82,14 @@
     </div><div class="col-md-4">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h2 class="panel-title">test5</h2>
+                <h2 class="panel-title">DropDaownlist Sample</h2>
             </div>
             <div class="panel-body">
                 <p>
-
-
+                    <div class="col-lg-10">
+                        @Html.DropDownList("items")
+                        @Html.DropDownListFor(d => d.item, Model.items, new { @class = "form-control", @id = "select" })
+                    </div>
                 </p>
                 <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
             </div>

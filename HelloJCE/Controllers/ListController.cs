@@ -29,6 +29,26 @@ namespace HelloJCE.Controllers
                 ViewBag.Users += u.UserName + "(" + string.Join(",", u.Roles.Select(r => r.Role.Name).ToList<string>()) + ") ";
             }
 
+            ListViewModel model = new ListViewModel();
+            List<SelectListItem> items = new List<SelectListItem>();
+            items.Add(new SelectListItem
+            {
+                Text = "Swimming",
+                Value = "1"
+            });
+            items.Add(new SelectListItem
+            {
+                Text = "Cycling",
+                Value = "2",
+                Selected = true
+            });
+            items.Add(new SelectListItem
+            {
+                Text = "Running",
+                Value = "3"
+            });
+            model.items = items;
+
             ItemRating ir = new ItemRating()
             {
                 ItemID = 1,
@@ -36,7 +56,10 @@ namespace HelloJCE.Controllers
                 TotalRaters = 2,
                 AverageRating = 4
             };
-            return View(ir);
+            model.rating = ir;
+            model.item = "Cycling";
+
+            return View(model);
         }
 
         // 
