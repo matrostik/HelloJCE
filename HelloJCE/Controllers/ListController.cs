@@ -13,7 +13,7 @@ namespace HelloJCE.Controllers
     {
         //
         // GET: /List/
-        public ActionResult Index() 
+        public ActionResult Index()
         {
             ViewBag.User = User.Identity.Name;
 

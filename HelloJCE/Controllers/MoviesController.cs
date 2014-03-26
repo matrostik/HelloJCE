@@ -201,9 +201,9 @@ namespace HelloJCE.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteComment(int commentId)
+        public ActionResult DeleteComment(int itemId)
         {
-            Comment com = db.Comments.Find(commentId);
+            Comment com = db.Comments.Find(itemId);
             try
             {
                 db.Comments.Remove(com);
