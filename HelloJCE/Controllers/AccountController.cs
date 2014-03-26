@@ -180,7 +180,7 @@ namespace HelloJCE.Controllers
                 }
 
                 await UserManager.AddToRoleAsync(user.Id, "User");
-
+                await SignInAsync(user, isPersistent: false);
                 return true;
             }
             return false;
