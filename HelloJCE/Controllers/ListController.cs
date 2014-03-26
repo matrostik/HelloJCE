@@ -29,12 +29,6 @@ namespace HelloJCE.Controllers
                 ViewBag.Users += u.UserName + "(" + string.Join(",", u.Roles.Select(r => r.Role.Name).ToList<string>()) + ") ";
             }
 
-            dynamic email = new Email("RegEmail");
-            email.To = "matrostik@gmail.com";
-            email.UserName = "Test";
-            email.ConfirmationToken = "1234567890";
-            email.Send();
-
             ItemRating ir = new ItemRating()
             {
                 ItemID = 1,
