@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -11,7 +8,6 @@ using Microsoft.Owin.Security;
 using HelloJCE.Models;
 using Postal;
 using System.Data.Entity;
-using System.Web.Security;
 
 namespace HelloJCE.Controllers
 {
@@ -59,7 +55,6 @@ namespace HelloJCE.Controllers
                     ModelState.AddModelError("", "Invalid username or password.");
                 }
             }
-
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -82,26 +77,23 @@ namespace HelloJCE.Controllers
             if (ModelState.IsValid)
             {
                 // Attempt to register the user
-                if (ModelState.IsValid)
+                string confirmationToken = CreateConfirmationToken();
+                var user = new ApplicationUser()
                 {
-                    string confirmationToken = CreateConfirmationToken();
-                    var user = new ApplicationUser()
-                    {
-                        UserName = model.UserName,
-                        Email = model.Email,
-                        ConfirmationToken = confirmationToken,
-                        IsConfirmed = false
-                    };
-                    var result = await UserManager.CreateAsync(user, model.Password);
-                    if (result.Succeeded)
-                    {
-                        SendEmailConfirmation(model.Email, model.UserName, confirmationToken);
-                        return RedirectToAction("RegisterStepTwo", "Account");
-                    }
-                    else
-                    {
-                        AddErrors(result);
-                    }
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    ConfirmationToken = confirmationToken,
+                    IsConfirmed = false
+                };
+                var result = await UserManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    SendEmailConfirmation(model.Email, model.UserName, confirmationToken);
+                    return RedirectToAction("Result", new { Message = ResultMessageId.RegisterStepTwo });
+                }
+                else
+                {
+                    AddErrors(result);
                 }
                 //var user = new ApplicationUser() { UserName = model.UserName };
                 //var result = await UserManager.CreateAsync(user, model.Password);
@@ -129,13 +121,6 @@ namespace HelloJCE.Controllers
             return View(model);
         }
 
-        [AllowAnonymous]
-        public ActionResult RegisterStepTwo()
-        {
-            return View();
-        }
-
-
         private string CreateConfirmationToken()
         {
             return ShortGuid.NewGuid();
@@ -145,6 +130,7 @@ namespace HelloJCE.Controllers
         {
             dynamic email = new Email("RegEmail");
             email.To = to;
+            email.From = "jce.teachme@gmail.com";
             email.UserName = username;
             email.ConfirmationToken = confirmationToken;
             email.Send();
@@ -191,21 +177,9 @@ namespace HelloJCE.Controllers
         {
             if (await ConfirmAccount(Id))
             {
-                return RedirectToAction("ConfirmationSuccess");
+                return RedirectToAction("Result", new { Message = ResultMessageId.ConfirmationSuccess });
             }
-            return RedirectToAction("ConfirmationFailure");
-        }
-
-        [AllowAnonymous]
-        public ActionResult ConfirmationSuccess()
-        {
-            return View();
-        }
-
-        [AllowAnonymous]
-        public ActionResult ConfirmationFailure()
-        {
-            return View();
+            return RedirectToAction("Result", new { Message = ResultMessageId.ConfirmationFailure });
         }
 
         //
@@ -290,6 +264,117 @@ namespace HelloJCE.Controllers
             }
 
             // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult ResetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            ApplicationDbContext context = new ApplicationDbContext();
+            ApplicationUser user = context.Users.SingleOrDefault(u => u.Email == model.Email);
+            if (user == null)// no such email
+            {
+                return View(model);//error
+            }
+            else// user found send reset password email
+            {
+                string confirmationToken = CreateConfirmationToken();
+                user.ConfirmationToken = confirmationToken;
+                DbSet<ApplicationUser> dbSet = context.Set<ApplicationUser>();
+                dbSet.Attach(user);
+                context.Entry(user).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+
+                SendEmailConfirmation(user.Email, user.UserName, confirmationToken);
+                return RedirectToAction("Result", "Account", new { Message = ResultMessageId.ResetPasswordEmail });
+            }
+        }
+
+        [AllowAnonymous]
+        public ActionResult ResetPasswordStepTwo(string Id)
+        {
+            ApplicationDbContext context = new ApplicationDbContext();
+            ApplicationUser user = context.Users.SingleOrDefault(u => u.ConfirmationToken == Id);
+            if (user != null)
+            {
+                ResetPasswordStepTwoViewModel model = new ResetPasswordStepTwoViewModel();
+                model.UserId = user.Id;
+                return View(model);
+            }
+            return RedirectToAction("Result", "Account", new { Message = ResultMessageId.ResetPasswordEmail });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResetPasswordStepTwo(ResetPasswordStepTwoViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var res1 = UserManager.RemovePassword(model.UserId);
+                var res2 = UserManager.AddPassword(model.UserId, model.NewPassword);
+                if (res2.Succeeded)
+                {
+                    return RedirectToAction("Result", new { Message = ResultMessageId.ResetPasswordCompleted });
+                }
+                else
+                {
+                    //AddErrors(result);
+                }
+            }
+            return View();
+        }
+
+        public enum ResultMessageId
+        {
+            RegisterStepTwo,
+            ConfirmationSuccess,
+            ConfirmationFailure,
+            ResetPasswordEmail,
+            ResetPasswordCompleted,
+            Error
+        }
+
+        [AllowAnonymous]
+        public ActionResult Result(ResultMessageId? message)
+        {
+            var model = new ResultViewModel();
+            switch (message)
+            {
+                case ResultMessageId.RegisterStepTwo:
+                    model.Title = "Registration Instructions";
+                    model.Text = "To complete the registration process look for an email in your inbox that provides further instructions.";
+                    break;
+                case ResultMessageId.ConfirmationSuccess:
+                    model.Title = "Registration Completed";
+                    model.Text = "You have completed the registration process. You can now logon to the system by clicking on the logon link.";
+                    break;
+                case ResultMessageId.ConfirmationFailure:
+                    model.Title = "Registration Error";
+                    model.Text = "There was an error confirming your email. Please try again.";
+                    break;
+                case ResultMessageId.ResetPasswordEmail:
+                    model.Title = "Password recovery email sent to user@email.com";
+                    model.Text = "If you don't see this email in your inbox within 15 minutes, look for it in your junk mail folder. If you find it there, please mark it as \"Not Junk\"..";
+                    break;
+                case ResultMessageId.ResetPasswordCompleted:
+                    model.Title = "Password recovery completed";
+                    model.Text = "You can login using new password";
+                    break;
+                case ResultMessageId.Error:
+                    model.Title = "";
+                    model.Text = "";
+                    break;
+                default:
+                    break;
+            }
             return View(model);
         }
 
@@ -491,7 +576,8 @@ namespace HelloJCE.Controllers
 
         private class ChallengeResult : HttpUnauthorizedResult
         {
-            public ChallengeResult(string provider, string redirectUri) : this(provider, redirectUri, null)
+            public ChallengeResult(string provider, string redirectUri)
+                : this(provider, redirectUri, null)
             {
             }
 

@@ -8,6 +8,7 @@ namespace HelloJCE.Models
     public class Movie
     {
         public int Id { get; set; }
+
         [StringLength(75, ErrorMessage = "Title cannot be longer than 75 characters.")]
         public string Title { get; set; }
 

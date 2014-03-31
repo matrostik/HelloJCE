@@ -44,13 +44,16 @@
                 <p>
                     @Html.ActionLink("Register", "Register") if you don't have a local account.
                 </p>
+                <p>
+                    @Html.ActionLink("Forgot password?", "ResetPassword")
+                </p>
             }
         </section>
     </div>
     <div class="col-md-4">
         @*<section id="socialLoginForm">
-            @Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
-        </section>*@
+                @Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
+            </section>*@
     </div>
 </div>
 @section Scripts {

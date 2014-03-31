@@ -11,6 +11,8 @@ namespace HelloJCE.Models
 
     public class ManageUserViewModel
     {
+        public string Id { get; set; }
+
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
@@ -61,7 +63,37 @@ namespace HelloJCE.Models
         public string ConfirmPassword { get; set; }
 
         [Required]
-        [Display(Name = "EMail")]
+        [Display(Name = "E Mail")]
         public string Email { get; set; }
+    }
+
+    public class ResetPasswordViewModel
+    {
+        [Required]
+        [Display(Name = "E-Mail")]
+        public string Email { get; set; }
+    }
+
+    public class ResetPasswordStepTwoViewModel
+    {
+        public string UserId { get; set; }
+
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "New password")]
+        public string NewPassword { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm new password")]
+        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
+    }
+
+    public class ResultViewModel
+    {
+        public string Title { get; set; }
+
+        public string Text { get; set; }
     }
 }
