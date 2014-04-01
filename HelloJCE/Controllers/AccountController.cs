@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using HelloJCE.Models;
 using Postal;
+using System;
 using System.Data.Entity;
 
 namespace HelloJCE.Controllers
@@ -128,8 +129,16 @@ namespace HelloJCE.Controllers
         [AllowAnonymous]
         public ActionResult IsEmailAvailable(string email)
         {
-            ApplicationUser user = Db.Users.SingleOrDefault(u => u.Email == email);
-            return Json(user == null, JsonRequestBehavior.AllowGet);
+            try
+            {
+                ApplicationUser user = Db.Users.SingleOrDefault(u => u.Email == email);
+                return Json(user == null, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                //string msg = ex.InnerException.Message;
+            }
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         private string CreateConfirmationToken()
@@ -550,7 +559,7 @@ namespace HelloJCE.Controllers
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError("", error);
+                ModelState.AddModelError("UserName", error);
             }
         }
 
