@@ -64,7 +64,7 @@ namespace HelloJCE.Models
 
         [Required]
         [Display(Name = "E-Mail")]
-        [System.Web.Mvc.Remote("IsEmailAvailable", "Account", ErrorMessage = "This Email Address has already been registered")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; }
     }
 
@@ -72,6 +72,7 @@ namespace HelloJCE.Models
     {
         [Required]
         [Display(Name = "E-Mail")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; }
     }
 

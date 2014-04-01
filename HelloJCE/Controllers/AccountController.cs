@@ -7,7 +7,6 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using HelloJCE.Models;
 using Postal;
-using System;
 using System.Data.Entity;
 
 namespace HelloJCE.Controllers
@@ -28,7 +27,7 @@ namespace HelloJCE.Controllers
 
         public UserManager<ApplicationUser> UserManager { get; private set; }
         public ApplicationDbContext Db { get; private set; }
-        
+
 
         //
         // GET: /Account/Login
@@ -80,9 +79,20 @@ namespace HelloJCE.Controllers
         {
             if (ModelState.IsValid)
             {
+                //check email
+                ApplicationUser user = Db.Users.SingleOrDefault(u => u.Email == model.Email);
+                if (user != null)
+                    ModelState.AddModelError("Email", "This Email Address has already been registered");
+                //check username
+                user = Db.Users.SingleOrDefault(u => u.UserName == model.UserName);
+                if (user != null)
+                    ModelState.AddModelError("UserName", "This Username already taken");
+                if (!ModelState.IsValid)
+                    return View(model);
+
                 // Attempt to register the user
                 string confirmationToken = CreateConfirmationToken();
-                var user = new ApplicationUser()
+                user = new ApplicationUser()
                 {
                     UserName = model.UserName,
                     Email = model.Email,
@@ -123,22 +133,6 @@ namespace HelloJCE.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public ActionResult IsEmailAvailable(string email)
-        {
-            try
-            {
-                ApplicationUser user = Db.Users.SingleOrDefault(u => u.Email == email);
-                return Json(user == null, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                //string msg = ex.InnerException.Message;
-            }
-            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         private string CreateConfirmationToken()
@@ -559,7 +553,7 @@ namespace HelloJCE.Controllers
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError("UserName", error);
+                ModelState.AddModelError("", error);
             }
         }
 
