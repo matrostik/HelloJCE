@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace HelloJCE.Models
 {
@@ -21,4 +23,12 @@ namespace HelloJCE.Models
         {
         }
     }
+
+    //public class CustomUserManager<T> : UserManager<T> where T : IUser
+    //{
+    //    public override Task<T> FindAsync(string userName, string password)
+    //    {
+    //        return base.FindAsync(userName, password);
+    //    }
+    //}
 }
