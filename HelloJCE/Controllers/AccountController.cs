@@ -121,6 +121,33 @@ namespace HelloJCE.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult IsEmailAvailable(string email)
+        {
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public JsonResult doesUserNameExist(string UserName)
+        {
+
+            //var user = Membership.GetUser(UserName);
+
+            return Json(true);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public virtual ActionResult IsUserNameAvailable(string Email)
+        {
+
+            return Json("This Email Address has already been registered", JsonRequestBehavior.AllowGet);
+
+        }
+
         private string CreateConfirmationToken()
         {
             return ShortGuid.NewGuid();

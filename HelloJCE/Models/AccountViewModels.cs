@@ -63,7 +63,8 @@ namespace HelloJCE.Models
         public string ConfirmPassword { get; set; }
 
         [Required]
-        [Display(Name = "E Mail")]
+        [Display(Name = "E-Mail")]
+        [System.Web.Mvc.Remote("IsEmailAvailable", "Account", ErrorMessage = "This Email Address has already been registered")]
         public string Email { get; set; }
     }
 
