@@ -22,9 +22,12 @@ namespace HelloJCE.Controllers
         public AccountController(UserManager<ApplicationUser> userManager)
         {
             UserManager = userManager;
+            Db = new ApplicationDbContext();
         }
 
         public UserManager<ApplicationUser> UserManager { get; private set; }
+        public ApplicationDbContext Db { get; private set; }
+        
 
         //
         // GET: /Account/Login
@@ -125,27 +128,8 @@ namespace HelloJCE.Controllers
         [AllowAnonymous]
         public ActionResult IsEmailAvailable(string email)
         {
-            return Json(false, JsonRequestBehavior.AllowGet);
-        }
-
-
-        [HttpPost]
-        [AllowAnonymous]
-        public JsonResult doesUserNameExist(string UserName)
-        {
-
-            //var user = Membership.GetUser(UserName);
-
-            return Json(true);
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public virtual ActionResult IsUserNameAvailable(string Email)
-        {
-
-            return Json("This Email Address has already been registered", JsonRequestBehavior.AllowGet);
-
+            ApplicationUser user = Db.Users.SingleOrDefault(u => u.Email == email);
+            return Json(user == null, JsonRequestBehavior.AllowGet);
         }
 
         private string CreateConfirmationToken()
@@ -165,17 +149,16 @@ namespace HelloJCE.Controllers
 
         private async Task<bool> ConfirmAccount(string confirmationToken)
         {
-            ApplicationDbContext context = new ApplicationDbContext();
-            ApplicationUser user = context.Users.SingleOrDefault(u => u.ConfirmationToken == confirmationToken);
+            ApplicationUser user = Db.Users.SingleOrDefault(u => u.ConfirmationToken == confirmationToken);
             if (user != null)
             {
                 user.IsConfirmed = true;
-                DbSet<ApplicationUser> dbSet = context.Set<ApplicationUser>();
+                DbSet<ApplicationUser> dbSet = Db.Set<ApplicationUser>();
                 dbSet.Attach(user);
-                context.Entry(user).State = EntityState.Modified;
-                context.SaveChanges();
+                Db.Entry(user).State = EntityState.Modified;
+                Db.SaveChanges();
 
-                var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+                var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(Db));
                 if (!rm.RoleExists("Admin"))
                     rm.Create(new IdentityRole("Admin"));
                 if (!rm.RoleExists("Moder"))
@@ -381,7 +364,7 @@ namespace HelloJCE.Controllers
                     break;
                 case ResultMessageId.ConfirmationSuccess:
                     model.Title = "Registration Completed";
-                    model.Text = "You have completed the registration process. You can now logon to the system by clicking on the logon link.";
+                    model.Text = "You have completed the registration process.";
                     break;
                 case ResultMessageId.ConfirmationFailure:
                     model.Title = "Registration Error";
