@@ -79,6 +79,7 @@ namespace HelloJCE.Controllers
         {
             if (ModelState.IsValid)
             {
+                model.Email = model.Email.Trim();
                 //check email
                 ApplicationUser user = Db.Users.SingleOrDefault(u => u.Email == model.Email);
                 if (user != null)
@@ -102,7 +103,7 @@ namespace HelloJCE.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    SendEmailConfirmation(model.Email, model.UserName, confirmationToken);
+                    SendEmailConfirmation(model.Email, model.UserName, confirmationToken, "RegEmail");
                     return RedirectToAction("Result", new { Message = ResultMessageId.RegisterStepTwo });
                 }
                 else
@@ -140,11 +141,12 @@ namespace HelloJCE.Controllers
             return ShortGuid.NewGuid();
         }
 
-        private void SendEmailConfirmation(string to, string username, string confirmationToken)
+        private void SendEmailConfirmation(string to, string username, string confirmationToken, string emailForm)
         {
-            dynamic email = new Email("RegEmail");
+            dynamic email = new Email(emailForm);
             email.To = to;
-            email.From = "jce.teachme@gmail.com";
+            email.From = new System.Net.Mail.MailAddress("jce.teachme@gmail.com","TeachMe Support");
+            //email.Subject = mail.Subject;
             email.UserName = username;
             email.ConfirmationToken = confirmationToken;
             email.Send();
@@ -153,7 +155,7 @@ namespace HelloJCE.Controllers
         private async Task<bool> ConfirmAccount(string confirmationToken)
         {
             ApplicationUser user = Db.Users.SingleOrDefault(u => u.ConfirmationToken == confirmationToken);
-            if (user != null)
+            if (user != null && !user.IsConfirmed)
             {
                 user.IsConfirmed = true;
                 DbSet<ApplicationUser> dbSet = Db.Set<ApplicationUser>();
@@ -305,7 +307,7 @@ namespace HelloJCE.Controllers
                 context.Entry(user).State = EntityState.Modified;
                 await context.SaveChangesAsync();
 
-                SendEmailConfirmation(user.Email, user.UserName, confirmationToken);
+                SendEmailConfirmation(user.Email, user.UserName, confirmationToken, "ResetPassword");
                 return RedirectToAction("Result", "Account", new { Message = ResultMessageId.ResetPasswordEmail });
             }
         }
