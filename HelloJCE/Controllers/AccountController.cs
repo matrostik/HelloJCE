@@ -355,6 +355,7 @@ namespace HelloJCE.Controllers
             ConfirmationFailure,
             ResetPasswordEmail,
             ResetPasswordCompleted,
+            ExternalLoginError,
             Error
         }
 
@@ -383,6 +384,10 @@ namespace HelloJCE.Controllers
                 case ResultMessageId.ResetPasswordCompleted:
                     model.Title = "Password recovery completed";
                     model.Text = "You can login using new password";
+                    break;
+                case ResultMessageId.ExternalLoginError:
+                    model.Title = "Error!";
+                    model.Text = "OOPS... Something gone wrong..";
                     break;
                 case ResultMessageId.Error:
                     model.Title = "";
@@ -419,8 +424,7 @@ namespace HelloJCE.Controllers
             var externalIdentity = await AuthenticationManager
            .GetExternalIdentityAsync(DefaultAuthenticationTypes.ExternalCookie);
 
-            var emailClaim = externalIdentity.Claims.FirstOrDefault(x =>
-                x.Type.Equals(
+            var emailClaim = externalIdentity.Claims.FirstOrDefault(x => x.Type.Equals(
                     "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
                     StringComparison.OrdinalIgnoreCase));
 
@@ -435,11 +439,37 @@ namespace HelloJCE.Controllers
             }
             else
             {
-                // If the user does not have an account, then prompt the user to create an account
-                ViewBag.ReturnUrl = returnUrl;
-                ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName, Email = email });
+                // Check if user already registered
+                ApplicationUser appuser = Db.Users.SingleOrDefault(u => u.Email == email);
+                if (appuser != null)
+                {
+                    // User account not confirmed
+                    if(!appuser.IsConfirmed)
+                    {
+                        appuser.IsConfirmed = true;
+                        DbSet<ApplicationUser> dbSet = Db.Set<ApplicationUser>();
+                        dbSet.Attach(appuser);
+                        Db.Entry(appuser).State = EntityState.Modified;
+                        Db.SaveChanges();
+                    }
+                    // Add External login
+                    var result = await UserManager.AddLoginAsync(appuser.Id, loginInfo.Login);
+                    if (result.Succeeded)
+                    {
+                        await SignInAsync(appuser, isPersistent: false);
+                        return RedirectToLocal(returnUrl);
+                    }
+
+                }
+                else
+                {
+                    // If the user does not have an account, then prompt the user to create an account
+                    ViewBag.ReturnUrl = returnUrl;
+                    ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName, Email = email });
+                }
             }
+            return RedirectToAction("Result", new { Message = ResultMessageId.ExternalLoginError });
         }
 
         //
@@ -490,6 +520,10 @@ namespace HelloJCE.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
+
+               
+
+
                 var user = new ApplicationUser() 
                 { 
                     UserName = model.UserName,
