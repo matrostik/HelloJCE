@@ -8,6 +8,7 @@ using Microsoft.Owin.Security;
 using HelloJCE.Models;
 using Postal;
 using System.Data.Entity;
+using System;
 
 namespace HelloJCE.Controllers
 {
@@ -415,6 +416,16 @@ namespace HelloJCE.Controllers
                 return RedirectToAction("Login");
             }
 
+            var externalIdentity = await AuthenticationManager
+           .GetExternalIdentityAsync(DefaultAuthenticationTypes.ExternalCookie);
+
+            var emailClaim = externalIdentity.Claims.FirstOrDefault(x =>
+                x.Type.Equals(
+                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+                    StringComparison.OrdinalIgnoreCase));
+
+            var email = emailClaim != null ? emailClaim.Value : null;
+
             // Sign in the user with this external login provider if the user already has a login
             var user = await UserManager.FindAsync(loginInfo.Login);
             if (user != null)
@@ -427,7 +438,7 @@ namespace HelloJCE.Controllers
                 // If the user does not have an account, then prompt the user to create an account
                 ViewBag.ReturnUrl = returnUrl;
                 ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName });
+                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName, Email = email });
             }
         }
 
@@ -450,6 +461,7 @@ namespace HelloJCE.Controllers
             {
                 return RedirectToAction("Manage", new { Message = ManageMessageId.Error });
             }
+
             var result = await UserManager.AddLoginAsync(User.Identity.GetUserId(), loginInfo.Login);
             if (result.Succeeded)
             {
@@ -478,18 +490,33 @@ namespace HelloJCE.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser() { UserName = model.UserName };
-                var result = await UserManager.CreateAsync(user);
-                if (result.Succeeded)
+                var user = new ApplicationUser() 
+                { 
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    ConfirmationToken = "0",
+                    IsConfirmed= true 
+                };
+                try
                 {
-                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                    var result = await UserManager.CreateAsync(user);
                     if (result.Succeeded)
                     {
-                        await SignInAsync(user, isPersistent: false);
-                        return RedirectToLocal(returnUrl);
+                        result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                        if (result.Succeeded)
+                        {
+                            await SignInAsync(user, isPersistent: false);
+                            return RedirectToLocal(returnUrl);
+                        }
                     }
+                    AddErrors(result);
                 }
-                AddErrors(result);
+                catch (System.Exception ex)
+                {
+                    
+                    
+                }
+                
             }
 
             ViewBag.ReturnUrl = returnUrl;
