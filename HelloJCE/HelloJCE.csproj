@@ -170,6 +170,7 @@
     </Compile>
     <Compile Include="Helpers\AppSettings.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />
+    <Compile Include="Helpers\ShortGuid.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Comment.cs" />
@@ -178,7 +179,6 @@
     <Compile Include="Models\ListViewModel.cs" />
     <Compile Include="Models\Movie.cs" />
     <Compile Include="Models\MovieDetailsModel.cs" />
-    <Compile Include="Models\ShortGuid.cs" />
     <Compile Include="Models\Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

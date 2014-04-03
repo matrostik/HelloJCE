@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace HelloJCE.Models
+namespace HelloJCE.Helpers
 {
     /// <summary>
     /// Represents a globally unique identifier (GUID) with a 

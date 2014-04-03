@@ -9,6 +9,7 @@ using HelloJCE.Models;
 using Postal;
 using System.Data.Entity;
 using System;
+using HelloJCE.Helpers;
 
 namespace HelloJCE.Controllers
 {
@@ -80,15 +81,17 @@ namespace HelloJCE.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Remove leading and trailing spaces 
                 model.Email = model.Email.Trim();
-                //check email
+                // Check email
                 ApplicationUser user = Db.Users.SingleOrDefault(u => u.Email == model.Email);
                 if (user != null)
                     ModelState.AddModelError("Email", "This Email Address has already been registered");
-                //check username
+                // Check username
                 user = Db.Users.SingleOrDefault(u => u.UserName == model.UserName);
                 if (user != null)
                     ModelState.AddModelError("UserName", "This Username already taken");
+                // Display errors if has
                 if (!ModelState.IsValid)
                     return View(model);
 
@@ -104,13 +107,17 @@ namespace HelloJCE.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    SendEmailConfirmation(model.Email, model.UserName, confirmationToken, "RegEmail");
+                    // User created send confirmation mail
+                    SendEmail(model.Email, model.UserName, confirmationToken, "RegEmail");
                     return RedirectToAction("Result", new { Message = ResultMessageId.RegisterStepTwo });
                 }
                 else
                 {
                     AddErrors(result);
                 }
+
+                #region default registration
+
                 //var user = new ApplicationUser() { UserName = model.UserName };
                 //var result = await UserManager.CreateAsync(user, model.Password);
 
@@ -131,63 +138,15 @@ namespace HelloJCE.Controllers
                 //{
                 //    AddErrors(result);
                 //}
-            }
 
+                #endregion
+            }
             // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-        private string CreateConfirmationToken()
-        {
-            return ShortGuid.NewGuid();
-        }
-
-        private void SendEmailConfirmation(string to, string username, string confirmationToken, string emailForm)
-        {
-            dynamic email = new Email(emailForm);
-            email.To = to;
-            email.From = new System.Net.Mail.MailAddress("jce.teachme@gmail.com","TeachMe Support");
-            //email.Subject = mail.Subject;
-            email.UserName = username;
-            email.ConfirmationToken = confirmationToken;
-            email.Send();
-        }
-
-        private async Task<bool> ConfirmAccount(string confirmationToken)
-        {
-            ApplicationUser user = Db.Users.SingleOrDefault(u => u.ConfirmationToken == confirmationToken);
-            if (user != null && !user.IsConfirmed)
-            {
-                user.IsConfirmed = true;
-                DbSet<ApplicationUser> dbSet = Db.Set<ApplicationUser>();
-                dbSet.Attach(user);
-                Db.Entry(user).State = EntityState.Modified;
-                Db.SaveChanges();
-
-                var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(Db));
-                if (!rm.RoleExists("Admin"))
-                    rm.Create(new IdentityRole("Admin"));
-                if (!rm.RoleExists("Moder"))
-                    rm.Create(new IdentityRole("Moder"));
-                if (!rm.RoleExists("Tutor"))
-                    rm.Create(new IdentityRole("Tutor"));
-                if (!rm.RoleExists("User"))
-                    rm.Create(new IdentityRole("User"));
-
-                if (user.UserName.Equals("Ros"))
-                {
-                    await UserManager.AddToRoleAsync(user.Id, "Admin");
-                    await UserManager.AddToRoleAsync(user.Id, "Moder");
-                    await UserManager.AddToRoleAsync(user.Id, "Tutor");
-                }
-
-                await UserManager.AddToRoleAsync(user.Id, "User");
-                await SignInAsync(user, isPersistent: false);
-                return true;
-            }
-            return false;
-        }
-
+        //
+        // GET: /Account/RegisterConfirmation
         [AllowAnonymous]
         public async Task<ActionResult> RegisterConfirmation(string Id)
         {
@@ -283,12 +242,16 @@ namespace HelloJCE.Controllers
             return View(model);
         }
 
+        //
+        // GET: /Account/ResetPassword
         [AllowAnonymous]
         public ActionResult ResetPassword()
         {
             return View();
         }
 
+        //
+        // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
@@ -301,18 +264,21 @@ namespace HelloJCE.Controllers
             }
             else// user found send reset password email
             {
+                // Update token
                 string confirmationToken = CreateConfirmationToken();
                 user.ConfirmationToken = confirmationToken;
                 DbSet<ApplicationUser> dbSet = context.Set<ApplicationUser>();
                 dbSet.Attach(user);
                 context.Entry(user).State = EntityState.Modified;
                 await context.SaveChangesAsync();
-
-                SendEmailConfirmation(user.Email, user.UserName, confirmationToken, "ResetPassword");
-                return RedirectToAction("Result", "Account", new { Message = ResultMessageId.ResetPasswordEmail });
+                // Send reset password email
+                SendEmail(user.Email, user.UserName, confirmationToken, "ResetPassword");
+                return RedirectToAction("Result", "Account", new { Message = ResultMessageId.ResetPasswordEmail, userName = user.Email });
             }
         }
 
+        //
+        // GET: /Account/ResetPasswordStepTwo
         [AllowAnonymous]
         public ActionResult ResetPasswordStepTwo(string Id)
         {
@@ -320,13 +286,17 @@ namespace HelloJCE.Controllers
             ApplicationUser user = context.Users.SingleOrDefault(u => u.ConfirmationToken == Id);
             if (user != null)
             {
+                // Correct token 
                 ResetPasswordStepTwoViewModel model = new ResetPasswordStepTwoViewModel();
                 model.UserId = user.Id;
                 return View(model);
             }
-            return RedirectToAction("Result", "Account", new { Message = ResultMessageId.ResetPasswordEmail });
+            // Wrong token dispaly error
+            return RedirectToAction("Result", "Account", new { Message = ResultMessageId.ResetPasswordTokenError });
         }
 
+        //
+        // POST: /Account/ResetPasswordStepTwo
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -338,29 +308,22 @@ namespace HelloJCE.Controllers
                 var res2 = UserManager.AddPassword(model.UserId, model.NewPassword);
                 if (res2.Succeeded)
                 {
+                    // Password changed
                     return RedirectToAction("Result", new { Message = ResultMessageId.ResetPasswordCompleted });
                 }
                 else
                 {
-                    //AddErrors(result);
+                    // Error
+                    return RedirectToAction("Result", new { Message = ResultMessageId.Error });
                 }
             }
             return View();
         }
 
-        public enum ResultMessageId
-        {
-            RegisterStepTwo,
-            ConfirmationSuccess,
-            ConfirmationFailure,
-            ResetPasswordEmail,
-            ResetPasswordCompleted,
-            ExternalLoginError,
-            Error
-        }
-
+        //
+        // GET: /Account/Result
         [AllowAnonymous]
-        public ActionResult Result(ResultMessageId? message)
+        public ActionResult Result(ResultMessageId? message, string userName = "")
         {
             var model = new ResultViewModel();
             switch (message)
@@ -378,20 +341,20 @@ namespace HelloJCE.Controllers
                     model.Text = "There was an error confirming your email. Please try again.";
                     break;
                 case ResultMessageId.ResetPasswordEmail:
-                    model.Title = "Password recovery email sent to user@email.com";
+                    model.Title = "Password recovery email sent to " + userName;
                     model.Text = "If you don't see this email in your inbox within 15 minutes, look for it in your junk mail folder. If you find it there, please mark it as \"Not Junk\"..";
                     break;
                 case ResultMessageId.ResetPasswordCompleted:
                     model.Title = "Password recovery completed";
                     model.Text = "You can login using new password";
                     break;
-                case ResultMessageId.ExternalLoginError:
-                    model.Title = "Error!";
-                    model.Text = "OOPS... Something gone wrong..";
+                case ResultMessageId.ResetPasswordTokenError:
+                    model.Title = "The recovery link you just used is incorrect.";
+                    model.Text = "Visit the <a href=\"/Account/ResetPassword\">reset password page</a> to send another one, or  <a href=\"/Home/Contact\">contact support</a>.";
                     break;
                 case ResultMessageId.Error:
-                    model.Title = "";
-                    model.Text = "";
+                     model.Title = "Error!";
+                    model.Text = "OOPS... Something gone wrong..";
                     break;
                 default:
                     break;
@@ -420,7 +383,7 @@ namespace HelloJCE.Controllers
             {
                 return RedirectToAction("Login");
             }
-
+            //Get user email
             var externalIdentity = await AuthenticationManager
            .GetExternalIdentityAsync(DefaultAuthenticationTypes.ExternalCookie);
 
@@ -443,9 +406,9 @@ namespace HelloJCE.Controllers
                 ApplicationUser appuser = Db.Users.SingleOrDefault(u => u.Email == email);
                 if (appuser != null)
                 {
-                    // User account not confirmed
-                    if(!appuser.IsConfirmed)
+                    if (!appuser.IsConfirmed)
                     {
+                        // User account not confirmed
                         appuser.IsConfirmed = true;
                         DbSet<ApplicationUser> dbSet = Db.Set<ApplicationUser>();
                         dbSet.Attach(appuser);
@@ -459,7 +422,6 @@ namespace HelloJCE.Controllers
                         await SignInAsync(appuser, isPersistent: false);
                         return RedirectToLocal(returnUrl);
                     }
-
                 }
                 else
                 {
@@ -469,7 +431,7 @@ namespace HelloJCE.Controllers
                     return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName, Email = email });
                 }
             }
-            return RedirectToAction("Result", new { Message = ResultMessageId.ExternalLoginError });
+            return RedirectToAction("Result", new { Message = ResultMessageId.Error });
         }
 
         //
@@ -508,34 +470,29 @@ namespace HelloJCE.Controllers
         public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
         {
             if (User.Identity.IsAuthenticated)
-            {
                 return RedirectToAction("Manage");
-            }
 
             if (ModelState.IsValid)
             {
                 // Get the information about the user from the external login provider
                 var info = await AuthenticationManager.GetExternalLoginInfoAsync();
                 if (info == null)
-                {
                     return View("ExternalLoginFailure");
-                }
 
-               
-
-
-                var user = new ApplicationUser() 
-                { 
+                var user = new ApplicationUser()
+                {
                     UserName = model.UserName,
                     Email = model.Email,
                     ConfirmationToken = "0",
-                    IsConfirmed= true 
+                    IsConfirmed = true
                 };
                 try
                 {
+                    // Create new user
                     var result = await UserManager.CreateAsync(user);
                     if (result.Succeeded)
                     {
+                        // create user external login
                         result = await UserManager.AddLoginAsync(user.Id, info.Login);
                         if (result.Succeeded)
                         {
@@ -545,14 +502,11 @@ namespace HelloJCE.Controllers
                     }
                     AddErrors(result);
                 }
-                catch (System.Exception ex)
+                catch (Exception)
                 {
-                    
-                    
                 }
-                
-            }
 
+            }
             ViewBag.ReturnUrl = returnUrl;
             return View(model);
         }
@@ -592,6 +546,97 @@ namespace HelloJCE.Controllers
             }
             base.Dispose(disposing);
         }
+
+
+
+        /// <summary>
+        /// Create token 
+        /// </summary>
+        /// <returns>string token</returns>
+        private string CreateConfirmationToken()
+        {
+            return ShortGuid.NewGuid();
+        }
+
+        /// <summary>
+        /// Send email
+        /// </summary>
+        /// <param name="to">email to</param>
+        /// <param name="username">to username</param>
+        /// <param name="confirmationToken">token</param>
+        /// <param name="emailForm">email form view</param>
+        private void SendEmail(string to, string username, string confirmationToken, string emailForm)
+        {
+            dynamic email = new Email(emailForm);
+            email.To = to;
+            email.From = new System.Net.Mail.MailAddress("jce.teachme@gmail.com", "TeachMe Support");
+            //email.Subject = mail.Subject;
+            email.UserName = username;
+            email.ConfirmationToken = confirmationToken;
+            email.Send();
+        }
+
+        /// <summary>
+        /// Add roles and add user to role
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        private async Task AddUserToRole(ApplicationUser user)
+        {
+            var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(Db));
+            if (!rm.RoleExists("Admin"))
+                rm.Create(new IdentityRole("Admin"));
+            if (!rm.RoleExists("Moder"))
+                rm.Create(new IdentityRole("Moder"));
+            if (!rm.RoleExists("Tutor"))
+                rm.Create(new IdentityRole("Tutor"));
+            if (!rm.RoleExists("User"))
+                rm.Create(new IdentityRole("User"));
+
+            if (user.UserName.Equals("Ros"))
+            {
+                await UserManager.AddToRoleAsync(user.Id, "Admin");
+                await UserManager.AddToRoleAsync(user.Id, "Moder");
+                await UserManager.AddToRoleAsync(user.Id, "Tutor");
+            }
+        }
+
+        /// <summary>
+        /// Confirm account
+        /// </summary>
+        /// <param name="confirmationToken">token</param>
+        /// <returns>true or false</returns>
+        private async Task<bool> ConfirmAccount(string confirmationToken)
+        {
+            ApplicationUser user = Db.Users.SingleOrDefault(u => u.ConfirmationToken == confirmationToken);
+            if (user != null && !user.IsConfirmed)
+            {
+                user.IsConfirmed = true;
+                DbSet<ApplicationUser> dbSet = Db.Set<ApplicationUser>();
+                dbSet.Attach(user);
+                Db.Entry(user).State = EntityState.Modified;
+                Db.SaveChanges();
+                // Add roles
+                await AddUserToRole(user);
+
+                await UserManager.AddToRoleAsync(user.Id, "User");
+                await SignInAsync(user, isPersistent: false);
+                return true;
+            }
+            return false;
+        }
+
+        public enum ResultMessageId
+        {
+            RegisterStepTwo,
+            ConfirmationSuccess,
+            ConfirmationFailure,
+            ResetPasswordEmail,
+            ResetPasswordCompleted,
+            ResetPasswordTokenError,
+            Error
+        }
+
 
         #region Helpers
         // Used for XSRF protection when adding external logins
