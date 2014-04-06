@@ -10,6 +10,7 @@ using Postal;
 using System.Data.Entity;
 using System;
 using HelloJCE.Helpers;
+using System.Threading;
 
 namespace HelloJCE.Controllers
 {
@@ -566,6 +567,19 @@ namespace HelloJCE.Controllers
         /// <param name="confirmationToken">token</param>
         /// <param name="emailForm">email form view</param>
         private void SendEmail(string to, string username, string confirmationToken, string emailForm)
+        {
+            Thread thread = new Thread(() => SendEmailInBackground(to, username, confirmationToken, emailForm));
+            thread.Start();
+
+            //dynamic email = new Email(emailForm);
+            //email.To = to;
+            //email.From = new System.Net.Mail.MailAddress("jce.teachme@gmail.com", "TeachMe Support");
+            ////email.Subject = mail.Subject;
+            //email.UserName = username;
+            //email.ConfirmationToken = confirmationToken;
+            //email.Send();
+        }
+        private static void SendEmailInBackground(string to, string username, string confirmationToken, string emailForm)
         {
             dynamic email = new Email(emailForm);
             email.To = to;
