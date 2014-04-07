@@ -109,7 +109,7 @@ namespace HelloJCE.Controllers
                 if (result.Succeeded)
                 {
                     // User created send confirmation mail
-                    SendEmail(model.Email, model.UserName, confirmationToken, "RegEmail");
+                    SendEmail(model.Email, model.UserName, confirmationToken, "RegEmail", Request.Url.Host);
                     return RedirectToAction("Result", new { Message = ResultMessageId.RegisterStepTwo });
                 }
                 else
@@ -273,7 +273,7 @@ namespace HelloJCE.Controllers
                 context.Entry(user).State = EntityState.Modified;
                 await context.SaveChangesAsync();
                 // Send reset password email
-                SendEmail(user.Email, user.UserName, confirmationToken, "ResetPassword");
+                SendEmail(user.Email, user.UserName, confirmationToken, "ResetPassword", Request.Url.Host);
                 return RedirectToAction("Result", "Account", new { Message = ResultMessageId.ResetPasswordEmail, userName = user.Email });
             }
         }
@@ -566,9 +566,9 @@ namespace HelloJCE.Controllers
         /// <param name="username">to username</param>
         /// <param name="confirmationToken">token</param>
         /// <param name="emailForm">email form view</param>
-        private void SendEmail(string to, string username, string confirmationToken, string emailForm)
+        private void SendEmail(string to, string username, string confirmationToken, string emailForm, string hostUrl)
         {
-            Thread thread = new Thread(() => SendEmailInBackground(to, username, confirmationToken, emailForm));
+            Thread thread = new Thread(() => SendEmailInBackground(to, username, confirmationToken, emailForm, hostUrl));
             thread.Start();
 
             //dynamic email = new Email(emailForm);
@@ -579,7 +579,7 @@ namespace HelloJCE.Controllers
             //email.ConfirmationToken = confirmationToken;
             //email.Send();
         }
-        private static void SendEmailInBackground(string to, string username, string confirmationToken, string emailForm)
+        private static void SendEmailInBackground(string to, string username, string confirmationToken, string emailForm, string hostUrl)
         {
             dynamic email = new Email(emailForm);
             email.To = to;
@@ -587,6 +587,7 @@ namespace HelloJCE.Controllers
             //email.Subject = mail.Subject;
             email.UserName = username;
             email.ConfirmationToken = confirmationToken;
+            email.HostUrl = hostUrl;
             email.Send();
         }
 
