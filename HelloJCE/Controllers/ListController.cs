@@ -59,6 +59,10 @@ namespace HelloJCE.Controllers
             model.rating = ir;
             model.item = "Cycling";
 
+            // Host url test
+            ViewBag.HostUrl = Request.Url.Host + " " + System.Web.HttpContext.Current.Request.Url.Host;
+            
+
             return View(model);
         }
 
