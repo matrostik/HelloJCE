@@ -1,12 +1,12 @@
-﻿@using HelloJCE.Models
+﻿@using HelloJCE.Helpers
 @model HelloJCE.Models.ItemRating
 
 @*<h3>@Model.Name <small>@Model.Description</small></h3>*@
 <div class="ratting-item" data-pid="@Model.ItemID">
-    <input class="rating" name="vote" type="radio" value="1" @Utils.Check(0, 1, Model.AverageRating) />
-    <input class="rating" name="vote" type="radio" value="2" @Utils.Check(1, 2, Model.AverageRating) />
-    <input class="rating" name="vote" type="radio" value="3" @Utils.Check(2, 3, Model.AverageRating) />
-    <input class="rating" name="vote" type="radio" value="4" @Utils.Check(3, 4, Model.AverageRating) />
-    <input class="rating" name="vote" type="radio" value="5" @Utils.Check(4, 5, Model.AverageRating) />
+    <input class="rating" name="vote" type="radio" value="1" @Utils.CheckRate(0, 1, Model.Rating, Model.TotalRaters) />
+    <input class="rating" name="vote" type="radio" value="2" @Utils.CheckRate(1, 2, Model.Rating, Model.TotalRaters) />
+    <input class="rating" name="vote" type="radio" value="3" @Utils.CheckRate(2, 3, Model.Rating, Model.TotalRaters) />
+    <input class="rating" name="vote" type="radio" value="4" @Utils.CheckRate(3, 4, Model.Rating, Model.TotalRaters) />
+    <input class="rating" name="vote" type="radio" value="5" @Utils.CheckRate(4, 5, Model.Rating, Model.TotalRaters) />
 </div>
 <span class="result"></span>

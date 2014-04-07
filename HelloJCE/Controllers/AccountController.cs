@@ -6,11 +6,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using HelloJCE.Models;
-using Postal;
 using System.Data.Entity;
 using System;
 using HelloJCE.Helpers;
-using System.Threading;
 
 namespace HelloJCE.Controllers
 {
@@ -109,7 +107,7 @@ namespace HelloJCE.Controllers
                 if (result.Succeeded)
                 {
                     // User created send confirmation mail
-                    SendEmail(model.Email, model.UserName, confirmationToken, "RegEmail", Request.Url.Host);
+                    Email.Send(model.Email, model.UserName, confirmationToken,EmailTemplate.Registration);
                     return RedirectToAction("Result", new { Message = ResultMessageId.RegisterStepTwo });
                 }
                 else
@@ -273,7 +271,7 @@ namespace HelloJCE.Controllers
                 context.Entry(user).State = EntityState.Modified;
                 await context.SaveChangesAsync();
                 // Send reset password email
-                SendEmail(user.Email, user.UserName, confirmationToken, "ResetPassword", Request.Url.Host);
+                Email.Send(user.Email, user.UserName, confirmationToken, EmailTemplate.ResetPassword);
                 return RedirectToAction("Result", "Account", new { Message = ResultMessageId.ResetPasswordEmail, userName = user.Email });
             }
         }
@@ -557,38 +555,6 @@ namespace HelloJCE.Controllers
         private string CreateConfirmationToken()
         {
             return ShortGuid.NewGuid();
-        }
-
-        /// <summary>
-        /// Send email
-        /// </summary>
-        /// <param name="to">email to</param>
-        /// <param name="username">to username</param>
-        /// <param name="confirmationToken">token</param>
-        /// <param name="emailForm">email form view</param>
-        private void SendEmail(string to, string username, string confirmationToken, string emailForm, string hostUrl)
-        {
-            Thread thread = new Thread(() => SendEmailInBackground(to, username, confirmationToken, emailForm, hostUrl));
-            thread.Start();
-
-            //dynamic email = new Email(emailForm);
-            //email.To = to;
-            //email.From = new System.Net.Mail.MailAddress("jce.teachme@gmail.com", "TeachMe Support");
-            ////email.Subject = mail.Subject;
-            //email.UserName = username;
-            //email.ConfirmationToken = confirmationToken;
-            //email.Send();
-        }
-        private static void SendEmailInBackground(string to, string username, string confirmationToken, string emailForm, string hostUrl)
-        {
-            dynamic email = new Email(emailForm);
-            email.To = to;
-            email.From = new System.Net.Mail.MailAddress("jce.teachme@gmail.com", "TeachMe Support");
-            //email.Subject = mail.Subject;
-            email.UserName = username;
-            email.ConfirmationToken = confirmationToken;
-            email.HostUrl = hostUrl;
-            email.Send();
         }
 
         /// <summary>
