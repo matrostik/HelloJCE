@@ -117,7 +117,36 @@
             </div>
             <div class="panel-body">
                 <p>
-                   @ViewBag.HostUrl
+                    @ViewBag.HostUrl
+                </p>
+                <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2 class="panel-title">File upload</h2>
+            </div>
+            <div class="panel-body">
+                <p>
+                    @using (Html.BeginForm("FileUpload", "List", FormMethod.Post,
+                            new { enctype = "multipart/form-data" }))
+                    {
+                        <label for="file">Upload Image:</label>
+                        <input type="file" name="file" id="file" class="form-control" />
+                        <input type="submit" value="Upload" class="submit" />
+
+                        @*<div class="input-group">
+					<span class="input-group-btn">
+						<span class="btn btn-primary btn-file">
+                            <input type="file" id="file" name="file">&hellip;Browse
+						</span>
+					</span>
+					<input type="text" class="form-control" readonly>
+				</div>*@
+                        <input type="submit" value="Upload" class="submit" />
+                    }
                 </p>
                 <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
             </div>
@@ -130,20 +159,7 @@
             </div>
             <div class="panel-body">
                 <p>
-                    
-                </p>
-                <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h2 class="panel-title">test</h2>
-            </div>
-            <div class="panel-body">
-                <p>
-                 
+
                 </p>
                 <p><a class="btn btn-default" href="">Learn more &raquo;</a></p>
             </div>
@@ -167,6 +183,29 @@
             autoclose: true,
             todayHighlight: true
         });
+
+        //$(document)
+        //         .on('change', '.btn-file :file', function () {
+        //             var input = $(this),
+        //             numFiles = input.get(0).files ? input.get(0).files.length : 1,
+        //             label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        //             input.trigger('fileselect', [numFiles, label]);
+        //         });
+
+        //$(document).ready(function () {
+        //    $('.btn-file :file').on('fileselect', function (event, numFiles, label) {
+
+        //        var input = $(this).parents('.input-group').find(':text'),
+		//			log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+        //        if (input.length) {
+        //            input.val(log);
+        //        } else {
+        //            if (log) alert(log);
+        //        }
+
+        //    });
+        //});
 
         $(function () {
             // ratting system: https://github.com/irfan/jquery-star-rating
