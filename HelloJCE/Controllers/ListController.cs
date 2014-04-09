@@ -7,6 +7,11 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Postal;
+using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace HelloJCE.Controllers
 {
@@ -163,13 +168,16 @@ namespace HelloJCE.Controllers
             if (file != null)
             {
                 string pic = System.IO.Path.GetFileName(file.FileName);
-                string path = System.IO.Path.Combine(Server.MapPath("~/Images/profile"), pic);
-                if (!System.IO.File.Exists(Server.MapPath("~/Images/profile")))
-                {
-                    System.IO.Directory.CreateDirectory(Server.MapPath("~/Images/profile"));
-                }
-                // file is uploaded
-                file.SaveAs(path);
+                string url = UploadImage(file.FileName);
+
+                
+                //string path = System.IO.Path.Combine(Server.MapPath("~/Images/profile"), pic);
+                //if (!System.IO.File.Exists(Server.MapPath("~/Images/profile")))
+                //{
+                //    System.IO.Directory.CreateDirectory(Server.MapPath("~/Images/profile"));
+                //}
+                //// file is uploaded
+                //file.SaveAs(path);
 
                 // save the image path path to the database or you can send image 
                 // directly to database
@@ -184,5 +192,28 @@ namespace HelloJCE.Controllers
             // after successfully uploading redirect the user
             return RedirectToAction("Index");
         }
+
+        string ClientId = "6b18f55eeee07f1";
+        public string UploadImage(string image)
+        {
+            WebClient w = new WebClient();
+            w.Headers.Add("Authorization", "Client-ID " + ClientId);
+            System.Collections.Specialized.NameValueCollection Keys = new System.Collections.Specialized.NameValueCollection();
+            try
+            {
+                Keys.Add("image", Convert.ToBase64String(System.IO.File.ReadAllBytes(image)));
+                byte[] responseArray = w.UploadValues("https://api.imgur.com/3/image.xml", Keys);
+                dynamic result = Encoding.ASCII.GetString(responseArray);
+                XDocument xml = XDocument.Parse(result);
+                var i = xml.Root.Element("link").Value;
+                return i;
+            }
+            catch (Exception s)
+            {
+                //MessageBox.Show("Something went wrong. " + s.Message);
+                return "Failed!";
+            }
+        }
+
     }
 }
