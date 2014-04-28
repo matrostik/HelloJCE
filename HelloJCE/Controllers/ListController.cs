@@ -71,9 +71,15 @@ namespace HelloJCE.Controllers
             return View(model);
         }
 
+
+        // GET: /List/Google/ 
+        public ActionResult Google()
+        {
+
+            return View();
+        }
         // 
         // GET: /HelloWorld/Welcome/ 
-
         public ActionResult Welcome(string name, int numTimes = 1)
         {
             ViewBag.Message = "Hello " + name;

@@ -264,6 +264,7 @@
     <Content Include="Views\Account\ResetPasswordStepTwo.cshtml" />
     <Content Include="Views\Emails\ResetPassword.cshtml" />
     <Content Include="Views\Account\Result.cshtml" />
+    <Content Include="Views\List\Google.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
