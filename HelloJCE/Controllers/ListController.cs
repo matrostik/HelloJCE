@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using System.IO;
 
 namespace HelloJCE.Controllers
 {
@@ -71,9 +72,15 @@ namespace HelloJCE.Controllers
             return View(model);
         }
 
+
+        // GET: /List/Google/ 
+        public ActionResult Google()
+        {
+
+            return View();
+        }
         // 
         // GET: /HelloWorld/Welcome/ 
-
         public ActionResult Welcome(string name, int numTimes = 1)
         {
             ViewBag.Message = "Hello " + name;
@@ -165,13 +172,23 @@ namespace HelloJCE.Controllers
 
         public ActionResult FileUpload(HttpPostedFileBase file)
         {
+            string url = string.Empty;
             if (file != null)
             {
                 string pic = System.IO.Path.GetFileName(file.FileName);
-                string url = UploadImage(file.FileName);
+                //url = UploadImage(file.FileName);
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    file.InputStream.CopyTo(ms);
+                    byte[] array = ms.GetBuffer();
+                    url = UploadImage(array);
+                    
+                }
+                
             }
             // after successfully uploading redirect the user
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { picUrl=url });
         }
 
         string ClientId = "6b18f55eeee07f1";
@@ -192,9 +209,28 @@ namespace HelloJCE.Controllers
             catch (Exception s)
             {
                 //MessageBox.Show("Something went wrong. " + s.Message);
-                return "Failed!";
+                return s.Message;
             }
         }
-
+        public string UploadImage(byte[] image)
+        {
+            WebClient w = new WebClient();
+            w.Headers.Add("Authorization", "Client-ID " + ClientId);
+            System.Collections.Specialized.NameValueCollection Keys = new System.Collections.Specialized.NameValueCollection();
+            try
+            {
+                Keys.Add("image", Convert.ToBase64String(image));
+                byte[] responseArray = w.UploadValues("https://api.imgur.com/3/image.xml", Keys);
+                dynamic result = Encoding.ASCII.GetString(responseArray);
+                XDocument xml = XDocument.Parse(result);
+                var i = xml.Root.Element("link").Value;
+                return i;
+            }
+            catch (Exception s)
+            {
+                //MessageBox.Show("Something went wrong. " + s.Message);
+                return s.Message;
+            }
+        }
     }
 }
