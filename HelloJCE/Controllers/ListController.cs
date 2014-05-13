@@ -218,7 +218,7 @@ namespace HelloJCE.Controllers
             catch (Exception s)
             {
                 //MessageBox.Show("Something went wrong. " + s.Message);
-                return "Failed!";
+                return s.Message;
             }
         }
 
