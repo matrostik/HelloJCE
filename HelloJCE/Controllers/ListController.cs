@@ -171,10 +171,11 @@ namespace HelloJCE.Controllers
 
         public ActionResult FileUpload(HttpPostedFileBase file)
         {
+            string url = string.Empty;
             if (file != null)
             {
                 string pic = System.IO.Path.GetFileName(file.FileName);
-                string url = UploadImage(file.FileName);
+                url = UploadImage(file.FileName);
 
                 
                 //string path = System.IO.Path.Combine(Server.MapPath("~/Images/profile"), pic);
@@ -196,7 +197,7 @@ namespace HelloJCE.Controllers
 
             }
             // after successfully uploading redirect the user
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { picUrl=url });
         }
 
         string ClientId = "6b18f55eeee07f1";
