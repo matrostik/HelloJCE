@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewBag.Title = "Bootstrap Markdown";
+}
+
+<h2>Bootstrap Markdown</h2>
+<a href="http://toopay.github.io/bootstrap-markdown/">http://toopay.github.io/bootstrap-markdown/</a>
+
+<form>
+    <input name="title" type="text" placeholder="Title?" />
+    <textarea name="content" data-provide="markdown" rows="10"></textarea>
+    <label class="checkbox">
+        <input name="publish" type="checkbox"> Publish
+    </label>
+    <hr />
+    <button type="submit" class="btn">Submit</button>
+</form> 
+
+@Styles.Render("~/Content/markdown")
+@section Scripts {
+    @Scripts.Render("~/bundles/markdown")
+
+
+    <script type="text/javascript">
+       
+    </script>
+}

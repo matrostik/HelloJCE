@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewBag.Title = "BootstrapGrowl";
+}
+
+<h2>BootstrapGrowl</h2>
+<a href="https://github.com/ifightcrime/bootstrap-growl">https://github.com/ifightcrime/bootstrap-growl</a>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/growl")
+
+    <script type="text/javascript">
+        $(function () {
+            $.bootstrapGrowl("This is a test.");
+
+            setTimeout(function () {
+                $.bootstrapGrowl("This is another test.", { type: 'success' });
+            }, 1000);
+
+            setTimeout(function () {
+                $.bootstrapGrowl("Danger, Danger!", {
+                    type: 'error',
+                    align: 'center',
+                    width: 'auto',
+                    allow_dismiss: false
+                });
+            }, 2000);
+
+            setTimeout(function () {
+                $.bootstrapGrowl("Danger, Danger!", {
+                    type: 'info',
+                    align: 'left',
+                    stackup_spacing: 30
+                });
+            }, 3000);
+        });
+    </script>
+}

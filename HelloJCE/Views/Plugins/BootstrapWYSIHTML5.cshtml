@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Bootstrap WYSIHTML5";
+}
+
+<h2>Bootstrap WYSIHTML5</h2>
+<a href="http://jhollingworth.github.io/bootstrap-wysihtml5/">http://jhollingworth.github.io/bootstrap-wysihtml5/</a>
+<hr />
+<div class="container">
+    <div class="row">
+        <textarea class="textarea" placeholder="Enter text ..." style="width: 810px; height: 200px"></textarea>
+    </div>
+</div>
+
+
+@Styles.Render("~/Content/wysihtml5")
+@section Scripts {
+    @Scripts.Render("~/bundles/wysihtml5")
+   
+    <script type="text/javascript">
+        $('.textarea').wysihtml5();
+    </script>
+}

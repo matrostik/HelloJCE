@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "Bootstrap Switch";
+}
+
+<h2>Bootstrap Switch 3</h2>
+
+<a href="http://www.bootstrap-switch.org/">http://www.bootstrap-switch.org/</a>
+<hr />
+<div class="row">
+    <div class="col-md-2">
+        <p>default</p>
+        <input type="checkbox" name="simple" checked>
+    </div>
+    <div class="col-md-2">
+        <p>mini</p>
+        <input type="checkbox" data-size="mini" name="simple" checked>
+    </div>
+    <div class="col-md-2">
+        <p>small</p>
+        <input type="checkbox" data-size="small" name="simple" checked>
+    </div>
+    <div class="col-md-2">
+        <p>large</p>
+        <input type="checkbox" data-size="large" name="simple" checked>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <p>color</p>
+        <input type="checkbox" name="simple" data-on-color="success" data-off-color="danger" checked>
+    </div>
+    <div class="col-md-2">
+        <p>readonly</p>
+        <input name="simple" type="checkbox" readonly="" checked>
+    </div>
+    <div class="col-md-2">
+        <p>disabled</p>
+        <input type="checkbox" disabled name="simple" checked>
+    </div>
+    <div class="col-md-2">
+        <p>custom text</p>
+        <input name="simple" type="checkbox" data-on-text="פעיל" data-off-text="מוקפא" checked>
+    </div>
+</div>
+<hr />
+<div class="row">
+    @using (Html.BeginForm())
+    {
+        <p>check submit</p>
+        <input type="checkbox" name="Example" id="switch-change" data-on-color="success" data-off-color="danger" data-size="large" data-on-text="פעיל" data-off-text="מוקפא" checked>
+        @Html.Hidden("isOn", true)
+        <input type="submit" value="submit" />
+    }
+</div>
+
+@Styles.Render("~/Content/bootstrapswitch")
+@section Scripts {
+    @Scripts.Render("~/bundles/bootstrapswitch")
+
+
+    <script type="text/javascript">
+        $("[name='simple']").bootstrapSwitch();
+
+        $('#switch-change').bootstrapSwitch();
+        $('#switch-change').on('switchChange.bootstrapSwitch', function (event, state) {
+            $("#isOn").val(state);
+        });
+    </script>
+}
+
+

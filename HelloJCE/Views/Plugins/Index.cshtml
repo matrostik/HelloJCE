@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewBag.Title = "Plugins";
+}
+
+<h2>List of plugins</h2>
+
+<div class="list-group">
+    @Html.ActionLink("Bootstrap Switch 3", "BootstrapSwitch", null, new { @class="list-group-item" })
+    @Html.ActionLink("Bootstrap Lightbox", "BootstrapLightbox", null, new { @class = "list-group-item" })
+    @Html.ActionLink("Bootstrap Growl", "BootstrapGrowl", null, new { @class = "list-group-item" })
+    @Html.ActionLink("Bootstrap Markdown", "BootstrapMarkdown", null, new { @class = "list-group-item" })
+    @Html.ActionLink("Bootstrap WYSIHTML5", "BootstrapWYSIHTML5", null, new { @class = "list-group-item" })
+    @Html.ActionLink("Twitter Typeahead", "Typeahead", null, new { @class = "list-group-item" })
+</div>
+

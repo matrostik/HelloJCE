@@ -29,7 +29,7 @@ namespace HelloJCE
                      "~/Content/bootstrap-datepicker.css"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/cyborg.css",
+                      "~/Content/bootstrap.css",
                       "~/Content/site.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/rate").Include(
@@ -42,6 +42,34 @@ namespace HelloJCE
                      "~/Scripts/irfan.rating.js"));
             bundles.Add(new StyleBundle("~/Content/ifranrate").Include(
                      "~/Content/ifran.rating.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/bootstrapswitch").Include(
+          "~/Scripts/bootstrap-switch.js"));
+            bundles.Add(new StyleBundle("~/Content/bootstrapswitch").Include(
+                     "~/Content/bootstrap-switch.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/bootstraplightbox").Include(
+        "~/Scripts/bootstrap-lightbox.js"));
+            bundles.Add(new StyleBundle("~/Content/bootstraplightbox").Include(
+                     "~/Content/bootstrap-lightbox.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/growl").Include(
+       "~/Scripts/jquery.bootstrap-growl.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/markdown").Include(
+      "~/Scripts/bootstrap-markdown.js"));
+            bundles.Add(new StyleBundle("~/Content/markdown").Include(
+                     "~/Content/bootstrap-markdown.min.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/wysihtml5").Include(
+     "~/Scripts/wysihtml5-0.3.0.js", "~/Scripts/bootstrap-wysihtml5.js"));
+            bundles.Add(new StyleBundle("~/Content/wysihtml5").Include(
+                     "~/Content/bootstrap-wysihtml5.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/typeahead").Include(
+    "~/Scripts/typeahead.jquery.js"));
+            //bundles.Add(new StyleBundle("~/Content/typeahead").Include(
+            //         "~/Content/bootstrap-wysihtml5.css"));
         }
     }
 }
