@@ -198,6 +198,7 @@
     <Content Include="Content\datepicker.css" />
     <Content Include="Content\datepicker3.css" />
     <Content Include="Content\ifran.rating.css" />
+    <Content Include="Content\multi-select.css" />
     <Content Include="Content\slate.css" />
     <Content Include="Content\superhero.css" />
     <Content Include="favicon.ico" />
@@ -220,6 +221,7 @@
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.bootstrap-growl.js" />
+    <Content Include="Scripts\jquery.multi-select.js" />
     <Content Include="Scripts\jquery.rating.js" />
     <Content Include="Scripts\jquery.rating.pack.js" />
     <Content Include="Scripts\jquery.validate.js" />
@@ -288,6 +290,7 @@
     <Content Include="Views\Plugins\BootstrapMarkdown.cshtml" />
     <Content Include="Views\Plugins\BootstrapWYSIHTML5.cshtml" />
     <Content Include="Views\Plugins\Typeahead.cshtml" />
+    <Content Include="Views\Plugins\Multiselect.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

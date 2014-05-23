@@ -70,6 +70,11 @@ namespace HelloJCE
     "~/Scripts/typeahead.jquery.js"));
             //bundles.Add(new StyleBundle("~/Content/typeahead").Include(
             //         "~/Content/bootstrap-wysihtml5.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/multiselect").Include(
+   "~/Scripts/jquery.multi-select.js"));
+            bundles.Add(new StyleBundle("~/Content/multiselect").Include(
+                     "~/Content/multi-select.css"));
         }
     }
 }

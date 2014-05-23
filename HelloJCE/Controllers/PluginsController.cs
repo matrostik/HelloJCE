@@ -51,5 +51,10 @@ namespace HelloJCE.Controllers
         {
             return View();
         }
+
+        public ActionResult Multiselect()
+        {
+            return View();
+        }
 	}
 }
